@@ -64,6 +64,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     onToggle: toggleSidebar,
   };
 
+  // Safely get current page title from pathname
+  const currentPath = location.pathname.split('/').pop() || '';
+  const formattedTitle =
+    currentPath.length > 0
+      ? currentPath.replace(/-/g, ' ').charAt(0).toUpperCase() + currentPath.slice(1).replace(/-/g, ' ')
+      : 'Dashboard';
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -101,17 +108,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="py-3 flex items-center justify-between">
               <h2 className="text-lg font-medium leading-6 text-gray-900 truncate">
-                {location.pathname
-                  .split('/')
-                  .pop()
-                  ?.replace('-', ' ')
-                  .charAt(0)
-                  .toUpperCase() +
-                  location.pathname
-                    .split('/')
-                    .pop()
-                    ?.slice(1)
-                    .replace('-', ' ') || 'Dashboard'}
+                {formattedTitle}
               </h2>
               <div className="flex items-center space-x-4">
                 <Link
