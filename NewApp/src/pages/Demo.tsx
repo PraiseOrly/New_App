@@ -367,16 +367,16 @@ const Demo: React.FC = () => {
             Preview Our Platform
           </h2>
           <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg animate-slide-up">
-            <LazyImage
-              src="https://images.pexels.com/photos/4164760/pexels-photo-4164760.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Demo video placeholder"
-              className="w-full h-full object-cover"
-              width={1200}
-              height={675}
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-              <p className="text-white text-lg font-medium">Video Demo Coming Soon</p>
-            </div>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/lSxD3Vxd2jA?si=7-y3yD4nxrhPreb8"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
           </div>
         </div>
       </section>

@@ -1,47 +1,143 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DashboardSidebar from './doctor/DoctorSidebar';
 import PatientSidebar from './patient/PatientSidebar';
 import DashboardHeader from './DashboardHeader';
 import { BellIcon, MessageCircleIcon } from 'lucide-react';
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
   role: 'patient' | 'doctor';
   userName: string;
 }
+
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   role,
-  userName
+  userName,
 }) => {
   const location = useLocation();
-  return <div className="min-h-screen bg-gray-50 flex">
-      {role === 'doctor' ? <DashboardSidebar /> : <PatientSidebar />}
-      <div className="flex-1 flex flex-col">
-        <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
-          <DashboardHeader role={role} userName={userName} />
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  // Close sidebar on outside click (mobile)
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        sidebarOpen
+      ) {
+        setSidebarOpen(false);
+      }
+    }
+    if (sidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [sidebarOpen]);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll when sidebar open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [sidebarOpen]);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const sidebarProps = {
+    isCollapsed: !sidebarOpen,
+    onToggle: toggleSidebar,
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <aside
+        ref={sidebarRef}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0 lg:static lg:inset-auto`}
+        aria-label="Sidebar"
+      >
+        {role === 'doctor' ? (
+          <DashboardSidebar {...sidebarProps} />
+        ) : (
+          <PatientSidebar {...sidebarProps} />
+        )}
+      </aside>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 lg:hidden"
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
+          <DashboardHeader
+            role={role}
+            userName={userName}
+            onToggleSidebar={toggleSidebar}
+          />
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="py-3 flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
-                  {location.pathname.split('/').pop()?.replace('-', ' ').charAt(0).toUpperCase() + location.pathname.split('/').pop()?.slice(1).replace('-', ' ') || 'Dashboard'}
-                </h2>
-              </div>
+              <h2 className="text-lg font-medium leading-6 text-gray-900 truncate">
+                {location.pathname
+                  .split('/')
+                  .pop()
+                  ?.replace('-', ' ')
+                  .charAt(0)
+                  .toUpperCase() +
+                  location.pathname
+                    .split('/')
+                    .pop()
+                    ?.slice(1)
+                    .replace('-', ' ') || 'Dashboard'}
+              </h2>
               <div className="flex items-center space-x-4">
-                <Link to={`/${role}-dashboard/notifications`} className="text-gray-400 hover:text-gray-500">
+                <Link
+                  to={`/${role}-dashboard/notifications`}
+                  className="text-gray-400 hover:text-gray-500"
+                  aria-label="Notifications"
+                >
                   <BellIcon className="h-6 w-6" />
                 </Link>
-                <Link to={`/${role}-dashboard/chat`} className="text-gray-400 hover:text-gray-500">
+                <Link
+                  to={`/${role}-dashboard/chat`}
+                  className="text-gray-400 hover:text-gray-500"
+                  aria-label="Chat"
+                >
                   <MessageCircleIcon className="h-6 w-6" />
                 </Link>
               </div>
             </div>
           </div>
-        </div>
+        </header>
         <main className="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default DashboardLayout;
