@@ -166,16 +166,32 @@ const LiveMessageAssistant: React.FC = () => {
   const generateResponse = (userInput: string): { text: string; quickReplies?: QuickReply[] } => {
     const inputLower = userInput.toLowerCase();
 
-    // Expanded keyword checks and detailed replies
+    // Expanded keyword checks and detailed replies including all major routes and overview
     if (inputLower.includes("help")) {
       return {
-        text: "I'm here to assist! What specifically do you need help with? For example, you can ask about platform features, data analysis, tutorials, account management, or troubleshooting.",
+        text: "I'm here to assist! What specifically do you need help with? For example, you can ask about platform features, data analysis, tutorials, account management, troubleshooting, project overview, or navigate to any section.",
         quickReplies: [
           { text: "Platform Features", action: () => handleFeatureRequest() },
           { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
           { text: "Tutorials", action: () => handleTutorialRequest() },
           { text: "Account Management", action: () => handleAccountManagementRequest() },
           { text: "Troubleshooting", action: () => handleTroubleshootingRequest() },
+          { text: "Project Overview", action: () => handleProjectOverviewRequest() },
+          { text: "Navigate to Homepage", action: () => navigateTo("/homepage") },
+          { text: "Navigate to Contact", action: () => navigateTo("/contact") },
+          { text: "Navigate to Research Library", action: () => navigateTo("/research-library") },
+          { text: "Navigate to Training", action: () => navigateTo("/training") },
+          { text: "Navigate to Terms", action: () => navigateTo("/terms") },
+          { text: "Navigate to Privacy", action: () => navigateTo("/privacy") },
+          { text: "Navigate to Certifications", action: () => navigateTo("/certifications") },
+          { text: "Navigate to Risk Assessment", action: () => navigateTo("/risk-assessment") },
+          { text: "Navigate to EHR Integration", action: () => navigateTo("/ehr-integration") },
+          { text: "Navigate to HIPAA", action: () => navigateTo("/hipaa") },
+          { text: "Navigate to Arrhythmia Detection", action: () => navigateTo("/arrhythmia-detection") },
+          { text: "Navigate to Clinical Guidance", action: () => navigateTo("/clinical-guidance") },
+          { text: "Navigate to ECG Analysis", action: () => navigateTo("/ecg-analysis") },
+          { text: "Navigate to Doctor Dashboard", action: () => navigateTo("/doctor-dashboard") },
+          { text: "Navigate to Patient Dashboard", action: () => navigateTo("/patient-dashboard") },
         ],
       };
     }
@@ -270,16 +286,63 @@ const LiveMessageAssistant: React.FC = () => {
         ],
       };
     }
+
+    // Navigation for all other recognized routes
+    const routeMap: { [key: string]: string } = {
+      homepage: "/homepage",
+      contact: "/contact",
+      research: "/research-library",
+      training: "/training",
+      terms: "/terms",
+      privacy: "/privacy",
+      certifications: "/certifications",
+      risk: "/risk-assessment",
+      ehr: "/ehr-integration",
+      hipaa: "/hipaa",
+      arrhythmia: "/arrhythmia-detection",
+      clinical: "/clinical-guidance",
+      ecg: "/ecg-analysis",
+      doctor: "/doctor-dashboard",
+      patient: "/patient-dashboard",
+    };
+
+    for (const key in routeMap) {
+      if (inputLower.includes(key)) {
+        return {
+          text: `Navigating you to the ${key.charAt(0).toUpperCase() + key.slice(1)} page.`,
+          quickReplies: [
+            {
+              text: `Go to ${key.charAt(0).toUpperCase() + key.slice(1)}`,
+              action: () => navigateTo(routeMap[key]),
+            },
+          ],
+        };
+      }
+    }
+
     return {
-      text: `Thanks for reaching out, ${userProfile.name}! I'm not sure I caught that. Could you clarify, or try asking about features, data analysis, tutorials, account management, or troubleshooting?`,
+      text: `Thanks for reaching out, ${userProfile.name}! I'm not sure I caught that. Could you clarify, or try asking about features, data analysis, tutorials, account management, troubleshooting, project overview, or navigation?`,
       quickReplies: [
         { text: "Platform Features", action: () => handleFeatureRequest() },
         { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
         { text: "Tutorials", action: () => handleTutorialRequest() },
         { text: "Account Management", action: () => handleAccountManagementRequest() },
         { text: "Troubleshooting", action: () => handleTroubleshootingRequest() },
+        { text: "Project Overview", action: () => handleProjectOverviewRequest() },
       ],
     };
+  };
+
+  // Navigation helper function
+  const navigateTo = (path: string) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "assistant",
+        text: `<a href="${path}" class="text-blue-600 underline">Click here to navigate to ${path}</a>`,
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ]);
   };
 
   // New handler functions for added topics
@@ -406,6 +469,16 @@ const LiveMessageAssistant: React.FC = () => {
             },
           ]),
       },
+    ],
+  });
+
+  // New handler function for project overview
+  const handleProjectOverviewRequest = () => ({
+    text: `Welcome to CardiaTeck AI! Our mission is to revolutionize cardiovascular healthcare through cutting-edge AI technology. Our vision is a world where heart disease is detected early and managed effectively, improving patient outcomes globally. We are motivated by the urgent need to reduce cardiovascular mortality and morbidity. Our impact includes empowering clinicians with advanced diagnostic tools, enhancing research capabilities, and improving patient care. How can I assist you further?`,
+    quickReplies: [
+      { text: "Platform Features", action: () => handleFeatureRequest() },
+      { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
+      { text: "Tutorials", action: () => handleTutorialRequest() },
     ],
   });
 
