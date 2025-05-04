@@ -165,19 +165,23 @@ const LiveMessageAssistant: React.FC = () => {
 
   const generateResponse = (userInput: string): { text: string; quickReplies?: QuickReply[] } => {
     const inputLower = userInput.toLowerCase();
+
+    // Expanded keyword checks and detailed replies
     if (inputLower.includes("help")) {
       return {
-        text: "I'm here to assist! What specifically do you need help with? For example, you can ask about platform features, data analysis, or tutorials.",
+        text: "I'm here to assist! What specifically do you need help with? For example, you can ask about platform features, data analysis, tutorials, account management, or troubleshooting.",
         quickReplies: [
           { text: "Platform Features", action: () => handleFeatureRequest() },
           { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
           { text: "Tutorials", action: () => handleTutorialRequest() },
+          { text: "Account Management", action: () => handleAccountManagementRequest() },
+          { text: "Troubleshooting", action: () => handleTroubleshootingRequest() },
         ],
       };
     }
-    if (inputLower.includes("learn") || inputLower.includes("library")) {
+    if (inputLower.includes("learn") || inputLower.includes("library") || inputLower.includes("research")) {
       return {
-        text: "Our Research Library is packed with insights! Visit it to explore studies and publications.",
+        text: "Our Research Library is packed with insights! Visit it to explore studies, publications, and latest cardiac research.",
         quickReplies: [
           {
             text: "Go to Research Library",
@@ -194,9 +198,9 @@ const LiveMessageAssistant: React.FC = () => {
         ],
       };
     }
-    if (inputLower.includes("contact")) {
+    if (inputLower.includes("contact") || inputLower.includes("support")) {
       return {
-        text: "You can reach our support team via the Contact page or call us at +1-800-CARDIAI.",
+        text: "You can reach our support team via the Contact page, email support@cardiateck.com, or call us at +1-800-CARDIAI.",
         quickReplies: [
           {
             text: "Visit Contact Page",
@@ -213,24 +217,119 @@ const LiveMessageAssistant: React.FC = () => {
         ],
       };
     }
-    if (inputLower.includes("features")) {
+    if (inputLower.includes("features") || inputLower.includes("capabilities") || inputLower.includes("functions")) {
       return handleFeatureRequest();
     }
-    if (inputLower.includes("data") || inputLower.includes("analysis")) {
+    if (inputLower.includes("data") || inputLower.includes("analysis") || inputLower.includes("interpretation")) {
       return handleDataAnalysisRequest();
     }
-    if (inputLower.includes("tutorial")) {
+    if (inputLower.includes("tutorial") || inputLower.includes("guide") || inputLower.includes("video")) {
       return handleTutorialRequest();
     }
+    if (inputLower.includes("account") || inputLower.includes("profile") || inputLower.includes("settings")) {
+      return handleAccountManagementRequest();
+    }
+    if (inputLower.includes("troubleshoot") || inputLower.includes("issue") || inputLower.includes("problem")) {
+      return handleTroubleshootingRequest();
+    }
+    if (inputLower.includes("privacy") || inputLower.includes("gdpr") || inputLower.includes("data protection")) {
+      return {
+        text: "We take your privacy seriously. You can read our Privacy Policy on the Privacy page for details on data protection and GDPR compliance.",
+        quickReplies: [
+          {
+            text: "View Privacy Policy",
+            action: () =>
+              setMessages((prev) => [
+                ...prev,
+                {
+                  sender: "assistant",
+                  text: '<a href="/privacy" class="text-blue-600 underline">Click here to view the Privacy Policy</a>',
+                  timestamp: new Date().toLocaleTimeString(),
+                },
+              ]),
+          },
+        ],
+      };
+    }
+    if (inputLower.includes("terms") || inputLower.includes("conditions") || inputLower.includes("agreement")) {
+      return {
+        text: "Our Terms of Use outline the rules and guidelines for using CardiaTeck AI. You can review them on the Terms page.",
+        quickReplies: [
+          {
+            text: "View Terms of Use",
+            action: () =>
+              setMessages((prev) => [
+                ...prev,
+                {
+                  sender: "assistant",
+                  text: '<a href="/terms" class="text-blue-600 underline">Click here to view the Terms of Use</a>',
+                  timestamp: new Date().toLocaleTimeString(),
+                },
+              ]),
+          },
+        ],
+      };
+    }
     return {
-      text: `Thanks for reaching out, ${userProfile.name}! I'm not sure I caught that. Could you clarify, or try asking about features, data analysis, or tutorials?`,
+      text: `Thanks for reaching out, ${userProfile.name}! I'm not sure I caught that. Could you clarify, or try asking about features, data analysis, tutorials, account management, or troubleshooting?`,
       quickReplies: [
         { text: "Platform Features", action: () => handleFeatureRequest() },
         { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
         { text: "Tutorials", action: () => handleTutorialRequest() },
+        { text: "Account Management", action: () => handleAccountManagementRequest() },
+        { text: "Troubleshooting", action: () => handleTroubleshootingRequest() },
       ],
     };
   };
+
+  // New handler functions for added topics
+  const handleAccountManagementRequest = () => ({
+    text: "You can update your profile, change your password, and manage notification preferences in the Account Settings page.",
+    quickReplies: [
+      {
+        text: "Go to Account Settings",
+        action: () =>
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "assistant",
+              text: '<a href="/account-settings" class="text-blue-600 underline">Click here to visit Account Settings</a>',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]),
+      },
+    ],
+  });
+
+  const handleTroubleshootingRequest = () => ({
+    text: "If you encounter issues, try restarting the app, clearing your cache, or contacting support for assistance.",
+    quickReplies: [
+      {
+        text: "Contact Support",
+        action: () =>
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "assistant",
+              text: '<a href="/contact" class="text-blue-600 underline">Click here to contact Support</a>',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]),
+      },
+      {
+        text: "View Troubleshooting Guide",
+        action: () =>
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "assistant",
+              text: '<a href="/resources/troubleshooting-guide.pdf" class="text-blue-600 underline" download>Download Troubleshooting Guide</a>',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]),
+      },
+    ],
+  });
 
   const handleFeatureRequest = () => ({
     text: "CardiaTeck AI offers ECG analysis, ASCVD risk assessment, treatment guidelines, and more. Want details on any of these?",
