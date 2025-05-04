@@ -28,6 +28,8 @@ import Gdpr from './pages/Gdpr';
 import Quality from './pages/Quality';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import LiveAssistant from './pages/LiveAssistant';
+import LiveMessageAssistant from './components/LiveMessageAssistant';
 import ErrorBoundary from './components/ErrorBoundary';
 export function App() {
   return <ErrorBoundary>
@@ -60,9 +62,9 @@ export function App() {
           <Route path="/quality" element={<Quality />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
-
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="/live-assistant" element={<LiveAssistant />} />
         </Routes>
+        <LiveMessageAssistant />
       </Router>
     </ErrorBoundary>;
 }

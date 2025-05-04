@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { FileTextIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-// Import LazyImage, Slideshow from previous examples
+
+import { LazyImage, Slideshow } from "../components/ResourceModal";
 
 const Terms: React.FC = () => {
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(null);
