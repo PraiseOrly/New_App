@@ -19,6 +19,9 @@ import BillingInsurance from '../components/doctor/admin/BillingInsurance';
 import CalendarPage from '../components/doctor/admin/CalendarPage';
 import ChatRoom from '../components/shared/ChatRoom';
 import Profile from '../components/doctor/Profile';
+import Alerts from './doctor-dashboard/Alerts';
+import Activity from './doctor-dashboard/Activity';
+
 const DoctorDashboard = () => {
   const doctorName = 'John Smith';
   return <DashboardLayout role="doctor" userName={doctorName}>
@@ -41,6 +44,8 @@ const DoctorDashboard = () => {
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/chat" element={<ChatRoom role="doctor" />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/alerts" element={<Alerts />} />
+        <Route path="/activity" element={<Activity />} />
       </Routes>
     </DashboardLayout>;
 };

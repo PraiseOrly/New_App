@@ -1,17 +1,44 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HeartPulseIcon, UserIcon, StethoscopeIcon, LoaderIcon } from 'lucide-react';
+import { useUser } from '../context/UserContext';
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [role, setRole] = useState<'patient' | 'doctor'>('patient');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useUser();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Extract form values
+    const form = e.target as HTMLFormElement;
+    const fullNameInput = form.querySelector<HTMLInputElement>('#fullName');
+    const emailInput = form.querySelector<HTMLInputElement>('#email');
+    const specialtySelect = form.querySelector<HTMLSelectElement>('#specialty');
+
+    const fullName = fullNameInput ? fullNameInput.value : '';
+    const email = emailInput ? emailInput.value : '';
+    const specialty = specialtySelect ? specialtySelect.value : '';
+
     // Simulate authentication delay
     setTimeout(() => {
       setIsLoading(false);
+
+      // Set user data in context
+      const userData: any = {
+        role,
+        name: fullName,
+        email,
+      };
+      if (role === 'doctor') {
+        userData.specialty = specialty;
+      }
+      setUser(userData);
+
       // Redirect based on role
       if (role === 'doctor') {
         navigate('/doctor-dashboard');
@@ -20,6 +47,7 @@ const AuthPage = () => {
       }
     }, 1500);
   };
+
   return <div className="min-h-screen flex flex-col md:flex-row bg-white">
       {/* Left Panel - Branding */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-b from-red-500 to-red-700 p-8 text-white flex-col justify-between">

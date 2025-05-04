@@ -1,5 +1,5 @@
 {
-  "name": "magic-patterns-vite-template",
+  "name": "CardiacTeck",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "cache": "^3.0.0",
+    "clear": "^0.1.0",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
