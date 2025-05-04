@@ -31,8 +31,10 @@ import Terms from './pages/Terms';
 import LiveAssistant from './pages/LiveAssistant';
 import LiveMessageAssistant from './components/LiveMessageAssistant';
 import ErrorBoundary from './components/ErrorBoundary';
+import { UserProvider } from './context/UserContext';
 export function App() {
   return <ErrorBoundary>
+    <UserProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Homepage />} />
@@ -66,5 +68,6 @@ export function App() {
         </Routes>
         <LiveMessageAssistant />
       </Router>
-    </ErrorBoundary>;
+    </UserProvider>
+  </ErrorBoundary>;
 }

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import DashboardSidebar from './doctor/DoctorSidebar';
 import PatientSidebar from './patient/PatientSidebar';
 import DashboardHeader from './DashboardHeader';
+import DashboardFooter from './DashboardFooter';
 import { BellIcon, MessageCircleIcon } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -72,67 +73,70 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       : 'Dashboard';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside
-        ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:static lg:inset-auto`}
-        aria-label="Sidebar"
-      >
-        {role === 'doctor' ? (
-          <DashboardSidebar {...sidebarProps} />
-        ) : (
-          <PatientSidebar {...sidebarProps} />
-        )}
-      </aside>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <aside
+          ref={sidebarRef}
+          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:translate-x-0 lg:static lg:inset-auto`}
+          aria-label="Sidebar"
+        >
+          {role === 'doctor' ? (
+            <DashboardSidebar {...sidebarProps} />
+          ) : (
+            <PatientSidebar {...sidebarProps} />
+          )}
+        </aside>
 
-      {/* Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-40 lg:hidden"
-          onClick={toggleSidebar}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
-          <DashboardHeader
-            role={role}
-            userName={userName}
-            onToggleSidebar={toggleSidebar}
+        {/* Overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-40 lg:hidden"
+            onClick={toggleSidebar}
+            aria-hidden="true"
           />
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="py-3 flex items-center justify-between">
-              <h2 className="text-lg font-medium leading-6 text-gray-900 truncate">
-                {formattedTitle}
-              </h2>
-              <div className="flex items-center space-x-4">
-                <Link
-                  to={`/${role}-dashboard/notifications`}
-                  className="text-gray-400 hover:text-gray-500"
-                  aria-label="Notifications"
-                >
-                  <BellIcon className="h-6 w-6" />
-                </Link>
-                <Link
-                  to={`/${role}-dashboard/chat`}
-                  className="text-gray-400 hover:text-gray-500"
-                  aria-label="Chat"
-                >
-                  <MessageCircleIcon className="h-6 w-6" />
-                </Link>
+        )}
+
+        {/* Main content */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
+            <DashboardHeader
+              role={role}
+              userName={userName}
+              onToggleSidebar={toggleSidebar}
+            />
+            <div className="px-4 sm:px-6 lg:px-8">
+              <div className="py-3 flex items-center justify-between">
+                <h2 className="text-lg font-medium leading-6 text-gray-900 truncate">
+                  {formattedTitle}
+                </h2>
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to={`/${role}-dashboard/notifications`}
+                    className="text-gray-400 hover:text-gray-500"
+                    aria-label="Notifications"
+                  >
+                    <BellIcon className="h-6 w-6" />
+                  </Link>
+                  <Link
+                    to={`/${role}-dashboard/chat`}
+                    className="text-gray-400 hover:text-gray-500"
+                    aria-label="Chat"
+                  >
+                    <MessageCircleIcon className="h-6 w-6" />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </header>
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
-          {children}
-        </main>
+          </header>
+          <main className="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+            {children}
+          </main>
+        </div>
       </div>
+      <DashboardFooter />
     </div>
   );
 };
