@@ -165,19 +165,39 @@ const LiveMessageAssistant: React.FC = () => {
 
   const generateResponse = (userInput: string): { text: string; quickReplies?: QuickReply[] } => {
     const inputLower = userInput.toLowerCase();
+
+    // Expanded keyword checks and detailed replies including all major routes and overview
     if (inputLower.includes("help")) {
       return {
-        text: "I'm here to assist! What specifically do you need help with? For example, you can ask about platform features, data analysis, or tutorials.",
+        text: "I'm here to assist! What specifically do you need help with? For example, you can ask about platform features, data analysis, tutorials, account management, troubleshooting, project overview, or navigate to any section.",
         quickReplies: [
           { text: "Platform Features", action: () => handleFeatureRequest() },
           { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
           { text: "Tutorials", action: () => handleTutorialRequest() },
+          { text: "Account Management", action: () => handleAccountManagementRequest() },
+          { text: "Troubleshooting", action: () => handleTroubleshootingRequest() },
+          { text: "Project Overview", action: () => handleProjectOverviewRequest() },
+          { text: "Navigate to Homepage", action: () => navigateTo("/homepage") },
+          { text: "Navigate to Contact", action: () => navigateTo("/contact") },
+          { text: "Navigate to Research Library", action: () => navigateTo("/research-library") },
+          { text: "Navigate to Training", action: () => navigateTo("/training") },
+          { text: "Navigate to Terms", action: () => navigateTo("/terms") },
+          { text: "Navigate to Privacy", action: () => navigateTo("/privacy") },
+          { text: "Navigate to Certifications", action: () => navigateTo("/certifications") },
+          { text: "Navigate to Risk Assessment", action: () => navigateTo("/risk-assessment") },
+          { text: "Navigate to EHR Integration", action: () => navigateTo("/ehr-integration") },
+          { text: "Navigate to HIPAA", action: () => navigateTo("/hipaa") },
+          { text: "Navigate to Arrhythmia Detection", action: () => navigateTo("/arrhythmia-detection") },
+          { text: "Navigate to Clinical Guidance", action: () => navigateTo("/clinical-guidance") },
+          { text: "Navigate to ECG Analysis", action: () => navigateTo("/ecg-analysis") },
+          { text: "Navigate to Doctor Dashboard", action: () => navigateTo("/doctor-dashboard") },
+          { text: "Navigate to Patient Dashboard", action: () => navigateTo("/patient-dashboard") },
         ],
       };
     }
-    if (inputLower.includes("learn") || inputLower.includes("library")) {
+    if (inputLower.includes("learn") || inputLower.includes("library") || inputLower.includes("research")) {
       return {
-        text: "Our Research Library is packed with insights! Visit it to explore studies and publications.",
+        text: "Our Research Library is packed with insights! Visit it to explore studies, publications, and latest cardiac research.",
         quickReplies: [
           {
             text: "Go to Research Library",
@@ -194,9 +214,9 @@ const LiveMessageAssistant: React.FC = () => {
         ],
       };
     }
-    if (inputLower.includes("contact")) {
+    if (inputLower.includes("contact") || inputLower.includes("support")) {
       return {
-        text: "You can reach our support team via the Contact page or call us at +1-800-CARDIAI.",
+        text: "You can reach our support team via the Contact page, email support@cardiateck.com, or call us at +1-800-CARDIAI.",
         quickReplies: [
           {
             text: "Visit Contact Page",
@@ -213,24 +233,166 @@ const LiveMessageAssistant: React.FC = () => {
         ],
       };
     }
-    if (inputLower.includes("features")) {
+    if (inputLower.includes("features") || inputLower.includes("capabilities") || inputLower.includes("functions")) {
       return handleFeatureRequest();
     }
-    if (inputLower.includes("data") || inputLower.includes("analysis")) {
+    if (inputLower.includes("data") || inputLower.includes("analysis") || inputLower.includes("interpretation")) {
       return handleDataAnalysisRequest();
     }
-    if (inputLower.includes("tutorial")) {
+    if (inputLower.includes("tutorial") || inputLower.includes("guide") || inputLower.includes("video")) {
       return handleTutorialRequest();
     }
+    if (inputLower.includes("account") || inputLower.includes("profile") || inputLower.includes("settings")) {
+      return handleAccountManagementRequest();
+    }
+    if (inputLower.includes("troubleshoot") || inputLower.includes("issue") || inputLower.includes("problem")) {
+      return handleTroubleshootingRequest();
+    }
+    if (inputLower.includes("privacy") || inputLower.includes("gdpr") || inputLower.includes("data protection")) {
+      return {
+        text: "We take your privacy seriously. You can read our Privacy Policy on the Privacy page for details on data protection and GDPR compliance.",
+        quickReplies: [
+          {
+            text: "View Privacy Policy",
+            action: () =>
+              setMessages((prev) => [
+                ...prev,
+                {
+                  sender: "assistant",
+                  text: '<a href="/privacy" class="text-blue-600 underline">Click here to view the Privacy Policy</a>',
+                  timestamp: new Date().toLocaleTimeString(),
+                },
+              ]),
+          },
+        ],
+      };
+    }
+    if (inputLower.includes("terms") || inputLower.includes("conditions") || inputLower.includes("agreement")) {
+      return {
+        text: "Our Terms of Use outline the rules and guidelines for using CardiaTeck AI. You can review them on the Terms page.",
+        quickReplies: [
+          {
+            text: "View Terms of Use",
+            action: () =>
+              setMessages((prev) => [
+                ...prev,
+                {
+                  sender: "assistant",
+                  text: '<a href="/terms" class="text-blue-600 underline">Click here to view the Terms of Use</a>',
+                  timestamp: new Date().toLocaleTimeString(),
+                },
+              ]),
+          },
+        ],
+      };
+    }
+
+    // Navigation for all other recognized routes
+    const routeMap: { [key: string]: string } = {
+      homepage: "/homepage",
+      contact: "/contact",
+      research: "/research-library",
+      training: "/training",
+      terms: "/terms",
+      privacy: "/privacy",
+      certifications: "/certifications",
+      risk: "/risk-assessment",
+      ehr: "/ehr-integration",
+      hipaa: "/hipaa",
+      arrhythmia: "/arrhythmia-detection",
+      clinical: "/clinical-guidance",
+      ecg: "/ecg-analysis",
+      doctor: "/doctor-dashboard",
+      patient: "/patient-dashboard",
+    };
+
+    for (const key in routeMap) {
+      if (inputLower.includes(key)) {
+        return {
+          text: `Navigating you to the ${key.charAt(0).toUpperCase() + key.slice(1)} page.`,
+          quickReplies: [
+            {
+              text: `Go to ${key.charAt(0).toUpperCase() + key.slice(1)}`,
+              action: () => navigateTo(routeMap[key]),
+            },
+          ],
+        };
+      }
+    }
+
     return {
-      text: `Thanks for reaching out, ${userProfile.name}! I'm not sure I caught that. Could you clarify, or try asking about features, data analysis, or tutorials?`,
+      text: `Thanks for reaching out, ${userProfile.name}! I'm not sure I caught that. Could you clarify, or try asking about features, data analysis, tutorials, account management, troubleshooting, project overview, or navigation?`,
       quickReplies: [
         { text: "Platform Features", action: () => handleFeatureRequest() },
         { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
         { text: "Tutorials", action: () => handleTutorialRequest() },
+        { text: "Account Management", action: () => handleAccountManagementRequest() },
+        { text: "Troubleshooting", action: () => handleTroubleshootingRequest() },
+        { text: "Project Overview", action: () => handleProjectOverviewRequest() },
       ],
     };
   };
+
+  // Navigation helper function
+  const navigateTo = (path: string) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "assistant",
+        text: `<a href="${path}" class="text-blue-600 underline">Click here to navigate to ${path}</a>`,
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ]);
+  };
+
+  // New handler functions for added topics
+  const handleAccountManagementRequest = () => ({
+    text: "You can update your profile, change your password, and manage notification preferences in the Account Settings page.",
+    quickReplies: [
+      {
+        text: "Go to Account Settings",
+        action: () =>
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "assistant",
+              text: '<a href="/account-settings" class="text-blue-600 underline">Click here to visit Account Settings</a>',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]),
+      },
+    ],
+  });
+
+  const handleTroubleshootingRequest = () => ({
+    text: "If you encounter issues, try restarting the app, clearing your cache, or contacting support for assistance.",
+    quickReplies: [
+      {
+        text: "Contact Support",
+        action: () =>
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "assistant",
+              text: '<a href="/contact" class="text-blue-600 underline">Click here to contact Support</a>',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]),
+      },
+      {
+        text: "View Troubleshooting Guide",
+        action: () =>
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "assistant",
+              text: '<a href="/resources/troubleshooting-guide.pdf" class="text-blue-600 underline" download>Download Troubleshooting Guide</a>',
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]),
+      },
+    ],
+  });
 
   const handleFeatureRequest = () => ({
     text: "CardiaTeck AI offers ECG analysis, ASCVD risk assessment, treatment guidelines, and more. Want details on any of these?",
@@ -307,6 +469,16 @@ const LiveMessageAssistant: React.FC = () => {
             },
           ]),
       },
+    ],
+  });
+
+  // New handler function for project overview
+  const handleProjectOverviewRequest = () => ({
+    text: `Welcome to CardiaTeck AI! Our mission is to revolutionize cardiovascular healthcare through cutting-edge AI technology. Our vision is a world where heart disease is detected early and managed effectively, improving patient outcomes globally. We are motivated by the urgent need to reduce cardiovascular mortality and morbidity. Our impact includes empowering clinicians with advanced diagnostic tools, enhancing research capabilities, and improving patient care. How can I assist you further?`,
+    quickReplies: [
+      { text: "Platform Features", action: () => handleFeatureRequest() },
+      { text: "Data Analysis", action: () => handleDataAnalysisRequest() },
+      { text: "Tutorials", action: () => handleTutorialRequest() },
     ],
   });
 

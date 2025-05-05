@@ -235,7 +235,7 @@ const ContactPage: React.FC = () => {
 
         {/* Contact Form */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="bg-gradient-to-br from-red-50 to-white rounded-2xl shadow-xl">
+          <div className="bg-blue-100 rounded-2xl shadow-xl">
             <div className="p-8 sm:p-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
                 Clinical Inquiry Form

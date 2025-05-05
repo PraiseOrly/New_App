@@ -1,6 +1,7 @@
 import React, { useState, Children } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HomeIcon, FolderIcon, ChevronDownIcon, ChevronUpIcon, UsersIcon, HeartPulseIcon, ClipboardListIcon, CalendarIcon, VideoIcon, FileTextIcon, ActivityIcon, StethoscopeIcon, ClockIcon, CreditCardIcon, MessageSquareIcon, UserIcon, AlertCircleIcon, LogOutIcon, MenuIcon, SearchIcon, Droplet, BrainIcon, BellIcon, SmartphoneIcon } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 interface SidebarItem {
   name: string;
   icon: any;
@@ -93,6 +94,7 @@ const doctorSidebarItems: SidebarItem[] = [{
 }];
 interface DashboardSidebarProps {}
 const DashboardSidebar: React.FC<DashboardSidebarProps> = () => {
+  const { user } = useUser();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -161,17 +163,17 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = () => {
         </div>
         <div className="flex-1 overflow-y-auto">
           <div className="flex-1 px-3 space-y-1">
-            {role === 'doctor' && filteredItems.map(item => renderNavItem(item))}
+            {user?.role === 'doctor' && filteredItems.map(item => renderNavItem(item))}
           </div>
         </div>
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
-            <img src="https://ui-avatars.com/api/?name=Dr.+John+Smith&background=random" alt="Doctor Profile" className="h-12 w-12 rounded-full" />
+            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`} alt="User Profile" className="h-12 w-12 rounded-full" />
             {!isCollapsed && <div>
                 <h3 className="text-sm font-medium text-gray-900">
-                  Dr. John Smith
+                  {user?.name || 'User'}
                 </h3>
-                <p className="text-xs text-gray-500">Cardiologist</p>
+                <p className="text-xs text-gray-500">{user?.specialty || ''}</p>
               </div>}
           </div>
           <button onClick={handleLogout} className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md">
