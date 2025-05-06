@@ -598,105 +598,105 @@ const Homepage: React.FC = () => {
 			</section>
 
 			{/* Footer */}
-			<footer className="bg-gray-900 text-white py-10 px-4">
+			<footer className="bg-gray-900 text-white py-12 px-6">
 				<div className="container mx-auto max-w-7xl">
-					<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
 						<div>
-							<h3 className="font-bold text-base mb-3">CardiacAI</h3>
-							<p className="text-gray-400 text-sm">
-								Medical device CE Marked • FDA 510(k) Cleared
+							<h3 className="font-extrabold text-lg mb-4 text-red-600">CardiacTek</h3>
+							<p className="text-gray-400 text-sm max-w-xs">
+								Empowering clinicians with AI-driven cardiac care solutions. Medical device CE Marked • FDA 510(k) Cleared
 							</p>
 						</div>
 						<div>
-							<h4 className="font-medium mb-3 text-base">Clinical Tools</h4>
-							<ul className="space-y-2 text-sm text-gray-400">
+							<h4 className="font-semibold mb-4 text-base border-b border-red-600 pb-2">Clinical Tools</h4>
+							<ul className="space-y-3 text-sm text-gray-400">
 								<li>
 									<Link
 										to="/ecg-analysis"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										ECG Analysis
 									</Link>
 								</li>
 								<li>
 									<Link
 										to="/risk-assessment"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										Risk Assessment
 									</Link>
 								</li>
 								<li>
 									<Link
 										to="/treatment-guidelines"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										Treatment Guidelines
 									</Link>
 								</li>
 							</ul>
 						</div>
 						<div>
-							<h4 className="font-medium mb-3 text-base">Resources</h4>
-							<ul className="space-y-2 text-sm text-gray-400">
+							<h4 className="font-semibold mb-4 text-base border-b border-red-600 pb-2">Resources</h4>
+							<ul className="space-y-3 text-sm text-gray-400">
 								<li>
 									<Link
 										to="/clinical-guidance"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										Clinical Guidance
 									</Link>
 								</li>
 								<li>
 									<Link
 										to="/research-library"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										Research Library
 									</Link>
 								</li>
 								<li>
 									<Link
 										to="/training"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										Clinician Training
 									</Link>
 								</li>
 							</ul>
 						</div>
 						<div>
-							<h4 className="font-medium mb-3 text-base">Compliance</h4>
-							<ul className="space-y-2 text-sm text-gray-400">
+							<h4 className="font-semibold mb-4 text-base border-b border-red-600 pb-2">Compliance</h4>
+							<ul className="space-y-3 text-sm text-gray-400">
 								<li>
 									<Link
 										to="/hipaa"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										HIPAA Compliance
 									</Link>
 								</li>
 								<li>
 									<Link
 										to="/gdpr"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										GDPR
 									</Link>
 								</li>
 								<li>
 									<Link
 										to="/quality"
-										className="hover:text-white transition-colors">
+										className="hover:text-red-600 transition-colors font-medium">
 										Quality Management
 									</Link>
 								</li>
 							</ul>
 						</div>
 					</div>
-					<div className="border-t border-gray-800 pt-6 text-center text-sm text-gray-400">
+					<div className="border-t border-red-600 pt-6 text-center text-sm text-gray-400">
 						<p>
-							© {new Date().getFullYear()} CardiacAI. For professional use only.
+							© {new Date().getFullYear()} CardiacTek. For professional use only.
 						</p>
-						<div className="mt-2 flex gap-4 justify-center">
+						<div className="mt-3 flex gap-6 justify-center">
 							<Link
 								to="/privacy"
-								className="hover:text-white transition-colors">
+								className="hover:text-red-600 transition-colors font-medium">
 								Privacy Policy
 							</Link>
-							<Link to="/terms" className="hover:text-white transition-colors">
+							<Link to="/terms" className="hover:text-red-600 transition-colors font-medium">
 								Terms of Use
 							</Link>
 						</div>

@@ -101,7 +101,7 @@ const AuthPage = () => {
           </div>
           <div className="py-8">
             <h1 className="text-3xl font-bold mb-6">
-              Transform Your Cardiovascular Care
+              Transform Cardiovascular Care
             </h1>
             <p className="text-lg opacity-90 mb-8">
               Join thousands of healthcare professionals and patients who trust
