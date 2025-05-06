@@ -8,6 +8,8 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [role, setRole] = useState<'patient' | 'doctor'>('patient');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [doctorId, setDoctorId] = useState('');
   const navigate = useNavigate();
   const { setUser } = useUser();
 
@@ -20,10 +22,18 @@ const AuthPage = () => {
     const fullNameInput = form.querySelector<HTMLInputElement>('#fullName');
     const emailInput = form.querySelector<HTMLInputElement>('#email');
     const specialtySelect = form.querySelector<HTMLSelectElement>('#specialty');
+    const countryInput = form.querySelector<HTMLInputElement>('#country');
+    const affiliatedHospitalInput = form.querySelector<HTMLInputElement>('#affiliatedHospital');
+    const medicalLicenseNumberInput = form.querySelector<HTMLInputElement>('#medicalLicenseNumber');
+    const doctorIdInput = form.querySelector<HTMLInputElement>('#doctorId');
 
     const fullName = fullNameInput ? fullNameInput.value : '';
     const email = emailInput ? emailInput.value : '';
     const specialty = specialtySelect ? specialtySelect.value : '';
+    const country = countryInput ? countryInput.value : '';
+    const affiliatedHospital = affiliatedHospitalInput ? affiliatedHospitalInput.value : '';
+    const medicalLicenseNumber = medicalLicenseNumberInput ? medicalLicenseNumberInput.value : '';
+    const doctorIdValue = doctorIdInput ? doctorIdInput.value : '';
 
     // Simulate authentication delay
     setTimeout(() => {
@@ -32,21 +42,49 @@ const AuthPage = () => {
       // Set user data in context
       const userData: any = {
         role,
-        name: fullName,
         email,
       };
-      if (role === 'doctor') {
-        userData.specialty = specialty;
+
+      if (!isLogin) {
+        // Create account
+        userData.name = fullName;
+        if (role === 'doctor') {
+          userData.specialty = specialty;
+          userData.country = country;
+          userData.affiliatedHospital = affiliatedHospital;
+          userData.medicalLicenseNumber = medicalLicenseNumber;
+        }
+      } else {
+        // Login
+        if (role === 'doctor') {
+          userData.doctorId = doctorIdValue;
+        }
       }
+
       setUser(userData);
 
-      // Redirect based on role
-      if (role === 'doctor') {
-        navigate('/doctor-dashboard');
+      if (!isLogin) {
+        if (role === 'doctor') {
+          // Generate a simulated doctor ID
+          const generatedDoctorId = 'DOC' + Math.floor(100000 + Math.random() * 900000).toString();
+          setDoctorId(generatedDoctorId);
+          setShowPopup(true);
+        } else {
+          navigate('/patient-dashboard');
+        }
       } else {
-        navigate('/patient-dashboard');
+        if (role === 'doctor') {
+          navigate('/doctor-dashboard');
+        } else {
+          navigate('/patient-dashboard');
+        }
       }
     }, 1500);
+  };
+
+  const handleProceedToDashboard = () => {
+    setShowPopup(false);
+    navigate('/doctor-dashboard');
   };
 
   return (
@@ -126,6 +164,20 @@ const AuthPage = () => {
             </div>
             {/* Auth Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
+              {isLogin && role === 'doctor' && (
+                <div>
+                  <label htmlFor="doctorId" className="block text-sm font-medium text-gray-700 mb-1">
+                    Doctor ID
+                  </label>
+                  <input
+                    id="doctorId"
+                    type="text"
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                    placeholder="Enter your doctor ID"
+                  />
+                </div>
+              )}
               {!isLogin && (
                 <div>
                   <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -165,23 +217,61 @@ const AuthPage = () => {
                 />
               </div>
               {!isLogin && role === 'doctor' && (
-                <div>
-                  <label htmlFor="specialty" className="block text-sm font-medium text-gray-700 mb-1">
-                    Medical Specialty
-                  </label>
-                  <select
-                    id="specialty"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                  >
-                    <option value="">Select your specialty</option>
-                    <option value="cardiology">Cardiology</option>
-                    <option value="internal">Internal Medicine</option>
-                    <option value="family">Family Medicine</option>
-                    <option value="emergency">Emergency Medicine</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
+                <>
+                  <div>
+                    <label htmlFor="specialty" className="block text-sm font-medium text-gray-700 mb-1">
+                      Medical Specialty
+                    </label>
+                    <select
+                      id="specialty"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                    >
+                      <option value="">Select your specialty</option>
+                      <option value="cardiology">Cardiology</option>
+                      <option value="internal">Internal Medicine</option>
+                      <option value="family">Family Medicine</option>
+                      <option value="emergency">Emergency Medicine</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                      Country
+                    </label>
+                    <input
+                      id="country"
+                      type="text"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                      placeholder="Enter your country"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="affiliatedHospital" className="block text-sm font-medium text-gray-700 mb-1">
+                      Affiliated Hospital/Clinic
+                    </label>
+                    <input
+                      id="affiliatedHospital"
+                      type="text"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                      placeholder="Enter your affiliated hospital or clinic"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="medicalLicenseNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                      Medical License Number
+                    </label>
+                    <input
+                      id="medicalLicenseNumber"
+                      type="text"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                      placeholder="Enter your medical license number"
+                    />
+                  </div>
+                </>
               )}
               <button
                 type="submit"
@@ -209,6 +299,22 @@ const AuthPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center">
+            <h3 className="text-lg font-semibold mb-4">Account Created Successfully</h3>
+            <p className="mb-4">Your Doctor ID is: <span className="font-mono">{doctorId}</span></p>
+            <button
+              onClick={handleProceedToDashboard}
+              className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md"
+            >
+              Proceed to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
