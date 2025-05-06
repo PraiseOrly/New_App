@@ -11,8 +11,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <HeartPulseIcon className="h-8 w-8 text-red-600" aria-hidden="true" />
-            <span className="font-extrabold text-2xl text-gray-900 tracking-wide select-none">CardiacTek</span>
+            <img src="/cardiacteklogo.jpg" alt="CardiacTek Logo" className="h-16 w-21" />
           </Link>
 
           {/* Desktop Navigation */}
