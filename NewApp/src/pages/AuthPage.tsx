@@ -310,6 +310,13 @@ const AuthPage: React.FC = () => {
 				{/* Left Panel - Branding */}
 				<div className="relative hidden lg:block animate-gradient p-6 text-white">
 					<div className="absolute inset-0 bg-black/20" />
+					<div className="flex justify-center mb-6 relative z-20">
+						<img
+							src="/real_logo.png"
+							alt="CardiacTek Logo"
+							className="h-32 w-auto drop-shadow-[0_6px_8px_rgba(185,28,28,0.9)] filter brightness-110 contrast-125"
+						/>
+					</div>
 					<LazyImage
 						src={brandingImages[currentImageIndex]}
 						alt="CardiacTek branding"
