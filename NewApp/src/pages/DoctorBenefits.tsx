@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import {
-	StethoscopeIcon,
-	BrainIcon,
+	ActivityIcon,
+	BadgeCheckIcon,
 	BellIcon,
+	BrainIcon,
+	CalendarIcon,
+	ChevronDownIcon,
 	ClipboardListIcon,
 	HeartPulseIcon,
-	ActivityIcon,
-	UserIcon,
-	CalendarIcon,
-	ShieldCheckIcon,
-	WatchIcon,
-	ScanIcon,
-	VideoIcon,
 	LineChartIcon,
-	BadgeCheckIcon,
-	ChevronDownIcon,
+	ScanIcon,
+	ShieldCheckIcon,
+	StethoscopeIcon,
+	UserIcon,
+	VideoIcon,
+	WatchIcon,
 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // Lazy-loaded image component
 interface LazyImageProps {
@@ -315,9 +316,7 @@ const DoctorBenefits: React.FC = () => {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-
 			<Navbar />
-
 			{/* Hero Section with Slideshow */}
 			<section className="bg-gradient-to-r from-red-50 to-white py-16 px-4">
 				<div className="max-w-7xl mx-auto">
@@ -352,7 +351,6 @@ const DoctorBenefits: React.FC = () => {
 					</div>
 				</div>
 			</section>
-
 			{/* Stats Section */}
 			<section className="py-16 px-4 bg-white">
 				<div className="max-w-7xl mx-auto">
@@ -362,7 +360,6 @@ const DoctorBenefits: React.FC = () => {
 					<StatsSection />
 				</div>
 			</section>
-
 			{/* Features Section */}
 			<section className="py-16 px-4 bg-gray-50">
 				<div className="max-w-7xl mx-auto space-y-20">
@@ -533,7 +530,6 @@ const DoctorBenefits: React.FC = () => {
 					</div>
 				</div>
 			</section>
-
 			{/* FAQ Section */}
 			<section className="py-16 px-4 bg-gray-50">
 				<div className="max-w-4xl mx-auto">
@@ -543,7 +539,6 @@ const DoctorBenefits: React.FC = () => {
 					<FAQAccordion />
 				</div>
 			</section>
-
 			{/* CTA Section */}
 			<section className="bg-gradient-to-r from-red-600 to-red-800 text-white py-16 px-4">
 				<div className="max-w-4xl mx-auto text-center">
@@ -570,119 +565,7 @@ const DoctorBenefits: React.FC = () => {
 					</div>
 				</div>
 			</section>
-
-			{/* Footer */}
-			<footer className="bg-gray-900 text-white py-12 px-4">
-				<div className="max-w-7xl mx-auto">
-					<div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-						<div>
-							<div className="flex items-center gap-2 mb-4">
-								<StethoscopeIcon className="h-8 w-8 text-red-600" />
-								<h3 className="font-bold text-lg">CardiacTek</h3>
-							</div>
-							<p className="text-gray-400 text-sm">
-								Medical device CE Marked • FDA 510(k) Cleared
-							</p>
-						</div>
-						<div>
-							<h4 className="font-medium mb-4">Clinical Tools</h4>
-							<ul className="space-y-2 text-sm text-gray-400">
-								<li>
-									<Link
-										to="/ecg"
-										className="hover:text-white transition-colors">
-										ECG Analysis
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/imaging"
-										className="hover:text-white transition-colors">
-										Cardiac Imaging
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/reports"
-										className="hover:text-white transition-colors">
-										Report Center
-									</Link>
-								</li>
-							</ul>
-						</div>
-						<div>
-							<h4 className="font-medium mb-4">Resources</h4>
-							<ul className="space-y-2 text-sm text-gray-400">
-								<li>
-									<Link
-										to="/training"
-										className="hover:text-white transition-colors">
-										Training
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/support"
-										className="hover:text-white transition-colors">
-										Support
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/research"
-										className="hover:text-white transition-colors">
-										Research
-									</Link>
-								</li>
-							</ul>
-						</div>
-						<div>
-							<h4 className="font-medium mb-4">Compliance</h4>
-							<ul className="space-y-2 text-sm text-gray-400">
-								<li>
-									<Link
-										to="/hipaa"
-										className="hover:text-white transition-colors">
-										HIPAA
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/gdpr"
-										className="hover:text-white transition-colors">
-										GDPR
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/security"
-										className="hover:text-white transition-colors">
-										Security
-									</Link>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-						<p>© {new Date().getFullYear()} CardiacTek. All rights reserved.</p>
-						<div className="mt-2 flex gap-4 justify-center">
-							<Link
-								to="/privacy"
-								className="hover:text-white transition-colors">
-								Privacy
-							</Link>
-							<Link to="/terms" className="hover:text-white transition-colors">
-								Terms
-							</Link>
-							<Link
-								to="/contact"
-								className="hover:text-white transition-colors">
-								Contact
-							</Link>
-						</div>
-					</div>
-				</div>
-			</footer>
+			<Footer />
 		</div>
 	);
 };
