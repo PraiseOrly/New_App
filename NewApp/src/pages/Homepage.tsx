@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import FeatureCard from "../components/FeatureCard";
+import Footer from "../components/Footer";
 import {
 	HeartPulseIcon,
 	StethoscopeIcon,
@@ -282,7 +283,7 @@ const Homepage: React.FC = () => {
 								</Link>
 							</div>
 						</div>
-						<div className="lg:w-1/2 mt-6">
+						<div className="mt-12 lg:w-[700px]">
 							<Slideshow
 								slides={[
 									{
@@ -424,7 +425,7 @@ const Homepage: React.FC = () => {
 						</h2>
 						<p className="text-gray-600 max-w-xl mx-auto animate-fade-in">
 							Innovative AI-powered tools designed to provide advanced clinical
-							insights{" "}
+							insights
 						</p>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -552,7 +553,7 @@ const Homepage: React.FC = () => {
 							<ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm sm:text-base mb-4 animate-fade-in">
 								<li>Planned support for real-time HL7 data synchronization</li>
 								<li>Upcoming DICOM imaging compatibility</li>
-								<li>AFuture automated report filing</li>
+								<li>Future automated report filing</li>
 								<li>Designed for cross-platform interoperability</li>
 							</ul>
 							<LearnMoreButton
@@ -596,8 +597,6 @@ const Homepage: React.FC = () => {
 					</div>
 				</div>
 			</section>
-
-import Footer from "../components/Footer";
 
 			{/* Footer */}
 			<Footer />
