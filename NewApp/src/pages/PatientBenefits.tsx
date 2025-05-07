@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import {
   UserIcon,
   HeartPulseIcon,
@@ -154,50 +155,7 @@ const PatientBenefits = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4">CardiacTek</h3>
-              <p className="text-gray-400 text-sm">
-                Patient-Centered Cardiac Care
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4">Health Tools</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/ecg" className="hover:text-white transition-colors">ECG Analysis</Link></li>
-                <li><Link to="/monitoring" className="hover:text-white transition-colors">Health Monitoring</Link></li>
-                <li><Link to="/reports" className="hover:text-white transition-colors">Medical Reports</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
-                <li><Link to="/emergency" className="hover:text-white transition-colors">Emergency Help</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
-                <li><Link to="/terms" className="hover:text-white transition-colors">Terms</Link></li>
-                <li><Link to="/security" className="hover:text-white transition-colors">Security</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>© {new Date().getFullYear()} CardiacTek. All rights reserved.</p>
-            <div className="mt-2 flex gap-4 justify-center">
-              <Link to="/accessibility" className="hover:text-white transition-colors">Accessibility</Link>
-              <Link to="/feedback" className="hover:text-white transition-colors">Feedback</Link>
-              <Link to="/research" className="hover:text-white transition-colors">Research</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
