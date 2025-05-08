@@ -1,22 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import FeatureCard from "../components/FeatureCard";
-import Footer from "../components/Footer";
-import RequestDemoModal from "../components/RequestDemoModal";
 import {
-	HeartPulseIcon,
-	StethoscopeIcon,
-	UserIcon,
 	ActivityIcon,
-	LineChartIcon,
-	CalendarCheckIcon,
-	BadgeCheckIcon,
-	ClipboardListIcon,
-	PlayCircleIcon,
 	ArrowRightIcon,
+	BadgeCheckIcon,
+	CalendarCheckIcon,
+	ClipboardListIcon,
+	HeartPulseIcon,
+	LineChartIcon,
+	PlayCircleIcon,
+	UserIcon,
 	XIcon,
 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import FeatureCard from "../components/FeatureCard";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import RequestDemoModal from "../components/RequestDemoModal";
 
 interface LazyImageProps {
 	src: string;
@@ -488,7 +487,7 @@ const Homepage: React.FC = () => {
 							},
 							{
 								icon: <UserIcon size={28} className="text-red-600" />,
-								title: "Longitudinal Tracking",
+								title: "Longitudinal Tracking(In Progress)",
 								stats: "Trend Analysis",
 								description:
 									"Historical comparison of cardiac parameters for disease progression monitoring",
@@ -521,26 +520,7 @@ const Homepage: React.FC = () => {
 									linkTo={item.modal.link}
 								/>
 								<div className="mt-3 text-center">
-								{item.title === "12-Lead ECG Analysis" ? (
-									<Link
-										to="/ecg-analysis"
-										className="group inline-flex items-center gap-2 text-red-600 font-medium py-2 px-4 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-600"
-									>
-										<span>Explore More</span>
-										<ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
-									</Link>
-								) : (
-									<LearnMoreButton
-										onClick={() =>
-											openModal(
-												item.modal.title,
-												item.modal.content,
-												item.modal.link
-											)
-										}
-										label="Explore More"
-									/>
-								)}
+									{/* Removed Explore More buttons as per request */}
 								</div>
 							</div>
 						))}
@@ -591,7 +571,7 @@ const Homepage: React.FC = () => {
 									openModal(
 										"EHR Integration",
 										"Our platform is designed to work effortlessly with Epic, Cerner, and other leading EHR systems, supporting real-time data synchronization and streamlining automated workflows.",
-										"/ehr-integration"
+										"/contact"
 									)
 								}
 								label="Discover Integration"
@@ -612,12 +592,12 @@ const Homepage: React.FC = () => {
 							Discover how our AI-powered solutions can elevate your practice.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
-						<button
-							onClick={() => setRequestDemoOpen(true)}
-							className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
-							<PlayCircleIcon className="w-5 h-5" />
-							Request Demo
-						</button>
+							<button
+								onClick={() => setRequestDemoOpen(true)}
+								className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
+								<PlayCircleIcon className="w-5 h-5" />
+								Request Demo
+							</button>
 							<Link
 								to="/contact"
 								className="border-2 border-white hover:bg-white/20 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
