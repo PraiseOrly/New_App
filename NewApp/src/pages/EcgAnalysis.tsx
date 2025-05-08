@@ -737,6 +737,15 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 	onClose,
 	data,
 }) => {
+	const [analysisTime, setAnalysisTime] = React.useState<string>("");
+
+	React.useEffect(() => {
+		if (isOpen) {
+			const now = new Date();
+			setAnalysisTime(now.toLocaleString());
+		}
+	}, [isOpen]);
+
 	if (!isOpen) return null;
 
 	return (
@@ -749,10 +758,10 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 					<XIcon className="w-6 h-6" />
 				</button>
 				<h3 className="text-2xl font-bold text-gray-900 mb-4">
-					ECG Processing Initiated
+					ECG Analysis Report
 				</h3>
-				<p className="text-gray-600 mb-6 leading-relaxed">
-					Your ECG analysis has started. Below is a summary of your submission:
+				<p className="text-gray-600 mb-2">
+					Analysis Time: <span className="font-medium">{analysisTime}</span>
 				</p>
 				<ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm mb-6">
 					<li>Images: {data.images.length} uploaded</li>
@@ -763,12 +772,12 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 						Reason: {data.reason === "other" ? data.otherReason : data.reason}
 					</li>
 				</ul>
-				<Link
-					to="/results/123"
-					className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300 inline-flex items-center gap-2">
-					View Results (Mock)
-					<FileTextIcon className="w-4 h-4" />
-				</Link>
+				{data.diagnosis && (
+					<div className="bg-red-100 border border-red-400 text-red-700 p-4 rounded mb-4">
+						<h4 className="font-semibold mb-2">{data.diagnosis}</h4>
+						<p>{data.message}</p>
+					</div>
+				)}
 			</div>
 		</div>
 	);
