@@ -350,8 +350,24 @@ const Homepage: React.FC = () => {
 										size={36}
 									/>
 								),
-								value: "AI-Powered",
-								text: "Arrhythmia Detection",
+								value: "Automated ECG",
+								text: "Analysis",
+								modal: {
+									title: "ECG Analysis",
+									content:
+										"Our AI-powered ECG analysis model classifies uploaded ECG images into four categories: Normal, Abnormal Heartbeat, History of Myocardial Infarction (MI), and Acute Myocardial Infarction.",
+									link: "/ecg-analysis",
+								},
+							},
+							{
+								icon: (
+									<HeartPulseIcon
+										className="text-red-600 mx-auto mb-4"
+										size={36}
+									/>
+								),
+								value: "Arrhythmia",
+								text: "Detection",
 								modal: {
 									title: "Arrhythmia Detection",
 									content:
@@ -375,22 +391,7 @@ const Homepage: React.FC = () => {
 									link: "/ecg-analysis",
 								},
 							},
-							{
-								icon: (
-									<HeartPulseIcon
-										className="text-red-600 mx-auto mb-4"
-										size={36}
-									/>
-								),
-								value: "AI-Powered",
-								text: "ECG Analysis",
-								modal: {
-									title: "ECG Analysis",
-									content:
-										"Our AI-powered ECG analysis model classifies uploaded ECG images into four categories: Normal, Abnormal Heartbeat, History of Myocardial Infarction (MI), and Acute Myocardial Infarction.",
-									link: "/ecg-analysis",
-								},
-							},
+
 							{
 								icon: (
 									<BadgeCheckIcon
@@ -517,6 +518,15 @@ const Homepage: React.FC = () => {
 									linkTo={item.modal.link}
 								/>
 								<div className="mt-3 text-center">
+								{item.title === "12-Lead ECG Analysis" ? (
+									<Link
+										to="/ecg-analysis"
+										className="group inline-flex items-center gap-2 text-red-600 font-medium py-2 px-4 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-600"
+									>
+										<span>Explore More</span>
+										<ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
+									</Link>
+								) : (
 									<LearnMoreButton
 										onClick={() =>
 											openModal(
@@ -527,6 +537,7 @@ const Homepage: React.FC = () => {
 										}
 										label="Explore More"
 									/>
+								)}
 								</div>
 							</div>
 						))}
@@ -598,12 +609,12 @@ const Homepage: React.FC = () => {
 							Discover how our AI-powered solutions can elevate your practice.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
-							<Link
-								to="/demo"
-								className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
-								<PlayCircleIcon className="w-5 h-5" />
-								Request Demo
-							</Link>
+<Link
+	to="/demo#demo-form"
+	className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
+	<PlayCircleIcon className="w-5 h-5" />
+	Request Demo
+</Link>
 							<Link
 								to="/contact"
 								className="border-2 border-white hover:bg-white/20 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
