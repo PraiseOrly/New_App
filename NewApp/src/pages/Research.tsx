@@ -1,263 +1,286 @@
+import { ArrowRightIcon, ChevronDownIcon, XIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  ArrowRightIcon,
-  ArrowUpIcon,
-  ChevronDownIcon,
-  HeartPulseIcon,
-  LinkedinIcon,
-  TwitterIcon,
-  XIcon,
-} from "lucide-react";
 import { Link } from "react-router-dom";
+import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
 const Slideshow: React.FC = () => {
-  const slides = [
-    {
-      id: 1,
-      image: "/innovate.jpg",
-      alt: "Innovate Slide",
-      caption: "Innovating Cardiac Care with AI",
-    },
-    {
-      id: 2,
-      image: "/cardiacteklogo.jpg",
-      alt: "CardiacTek Logo Slide",
-      caption: "Trusted Cardiac Technology",
-    },
-    {
-      id: 3,
-      image: "/image.png",
-      alt: "Research Slide",
-      caption: "Cutting-edge Research and Development",
-    },
-  ];
+	const slides = [
+		{
+			id: 1,
+			image: "/innovate.jpg",
+			alt: "Innovate Slide",
+			caption: "Innovating Cardiac Care with AI",
+		},
+		{
+			id: 2,
+			image: "/cardiacteklogo.jpg",
+			alt: "CardiacTek Logo Slide",
+			caption: "Trusted Cardiac Technology",
+		},
+		{
+			id: 3,
+			image: "/image.png",
+			alt: "Research Slide",
+			caption: "Cutting-edge Research and Development",
+		},
+	];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+	const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === slides.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setCurrentIndex((prevIndex) =>
+				prevIndex === slides.length - 1 ? 0 : prevIndex + 1
+			);
+		}, 4000);
+		return () => clearInterval(interval);
+	}, []);
 
-  return (
-    <div className="relative w-full rounded-lg overflow-hidden shadow-lg">
-      <img
-        src={slides[currentIndex].image}
-        alt={slides[currentIndex].alt}
-        className="w-full h-64 object-cover"
-      />
-      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 text-center">
-        {slides[currentIndex].caption}
-      </div>
-    </div>
-  );
+	return (
+		<div className="relative w-full rounded-lg overflow-hidden shadow-lg">
+			<img
+				src={slides[currentIndex].image}
+				alt={slides[currentIndex].alt}
+				className="w-full h-64 object-cover"
+			/>
+			<div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 text-center">
+				{slides[currentIndex].caption}
+			</div>
+		</div>
+	);
 };
 
 interface LazyImageProps {
-  src: string;
-  alt: string;
-  className?: string;
-  width: number;
-  height: number;
-  eager?: boolean;
+	src: string;
+	alt: string;
+	className?: string;
+	width: number;
+	height: number;
+	eager?: boolean;
 }
 
 const LazyImage: React.FC<LazyImageProps> = ({
-  src,
-  alt,
-  className = "",
-  width,
-  height,
-  eager = false,
+	src,
+	alt,
+	className = "",
+	width,
+	height,
+	eager = false,
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
+	const [isLoaded, setIsLoaded] = useState(false);
+	const imgRef = useRef<HTMLImageElement>(null);
 
-  useEffect(() => {
-    if (eager) return;
+	useEffect(() => {
+		if (eager) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && imgRef.current) {
-            imgRef.current.src = imgRef.current.dataset.src!;
-            imgRef.current.removeAttribute("data-src");
-            observer.unobserve(imgRef.current);
-          }
-        });
-      },
-      { rootMargin: "100px 0px", threshold: 0.01 }
-    );
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting && imgRef.current) {
+						imgRef.current.src = imgRef.current.dataset.src!;
+						imgRef.current.removeAttribute("data-src");
+						observer.unobserve(imgRef.current);
+					}
+				});
+			},
+			{ rootMargin: "100px 0px", threshold: 0.01 }
+		);
 
-    if (imgRef.current) observer.observe(imgRef.current);
+		if (imgRef.current) observer.observe(imgRef.current);
 
-    return () => observer.disconnect();
-  }, [eager]);
+		return () => observer.disconnect();
+	}, [eager]);
 
-      return (
-        <img
-          ref={imgRef}
-          src={eager ? src : undefined}
-          data-src={eager ? undefined : src}
-          alt={alt}
-          width={width}
-          height={height}
-          className={`${className} ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-500`}
-          loading={eager ? "eager" : "lazy"}
-          decoding="async"
-          fetchPriority={eager ? "high" : "auto"}
-          onLoad={() => setIsLoaded(true)}
-        />
-      );
+	return (
+		<img
+			ref={imgRef}
+			src={eager ? src : undefined}
+			data-src={eager ? undefined : src}
+			alt={alt}
+			width={width}
+			height={height}
+			className={`${className} ${
+				isLoaded ? "opacity-100" : "opacity-0"
+			} transition-opacity duration-500`}
+			loading={eager ? "eager" : "lazy"}
+			decoding="async"
+			fetchPriority={eager ? "high" : "auto"}
+			onLoad={() => setIsLoaded(true)}
+		/>
+	);
 };
 
 interface ResearchItem {
-  title: string;
-  category: string;
-  description: string;
-  image: string;
-  status: string;
+	title: string;
+	category: string;
+	description: string;
+	image: string;
+	status: string;
 }
 
 interface ResearchCardProps {
-  item: ResearchItem;
-  onLearnMore: () => void;
+	item: ResearchItem;
+	onLearnMore: () => void;
 }
 
 const ResearchCard: React.FC<ResearchCardProps> = ({ item, onLearnMore }) => (
-  <div className="bg-red-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-    <LazyImage
-      src={item.image}
-      alt={`${item.title} illustration`}
-      className="w-full h-48 object-cover rounded-lg mb-4"
-      width={400}
-      height={192}
-    />
-    <div className="absolute top-4 right-4 bg-yellow-600 text-white text-sm font-medium px-3 py-1.5 rounded-full shadow-sm">
-      {item.status}
-    </div>
-    <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
-    <LearnMoreButton onClick={onLearnMore} label="Learn More" />
-  </div>
+	<div className="bg-red-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+		<LazyImage
+			src={item.image}
+			alt={`${item.title} illustration`}
+			className="w-full h-48 object-cover rounded-lg mb-4"
+			width={400}
+			height={192}
+		/>
+		<div className="absolute top-4 right-4 bg-yellow-600 text-white text-sm font-medium px-3 py-1.5 rounded-full shadow-sm">
+			{item.status}
+		</div>
+		<h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
+		<p className="text-gray-600 text-sm mb-4 line-clamp-2">
+			{item.description}
+		</p>
+		<LearnMoreButton onClick={onLearnMore} label="Learn More" />
+	</div>
 );
 
 interface ResearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  content: string;
-  status: string;
-  link?: string;
+	isOpen: boolean;
+	onClose: () => void;
+	title: string;
+	content: string;
+	status: string;
+	link?: string;
 }
 
 const ResearchModal: React.FC<ResearchModalProps> = ({
-  isOpen,
-  onClose,
-  title,
-  content,
-  status,
-  link,
+	isOpen,
+	onClose,
+	title,
+	content,
+	status,
+	link,
 }) => {
-  if (!isOpen) return null;
+	if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
-          aria-label="Close modal"
-        >
-          <XIcon className="w-6 h-6" />
-        </button>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">{title}</h3>
-        <p className="text-sm text-gray-600 mb-4">Status: {status}</p>
-        <p className="text-gray-600 mb-6 leading-relaxed">{content}</p>
-        {link && (
-          <Link
-            to={link}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300 inline-flex items-center gap-2"
-          >
-            Explore More
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
-        )}
-      </div>
-    </div>
-  );
+	return (
+		<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in">
+			<div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
+				<button
+					onClick={onClose}
+					className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+					aria-label="Close modal">
+					<XIcon className="w-6 h-6" />
+				</button>
+				<h3 className="text-2xl font-bold text-gray-900 mb-2">{title}</h3>
+				<p className="text-sm text-gray-600 mb-4">Status: {status}</p>
+				<p className="text-gray-600 mb-6 leading-relaxed">{content}</p>
+				{link && (
+					<Link
+						to={link}
+						className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300 inline-flex items-center gap-2">
+						Contribute
+						<ArrowRightIcon className="w-4 h-4" />
+					</Link>
+				)}
+			</div>
+		</div>
+	);
 };
 
 const LearnMoreButton: React.FC<{
-  onClick: () => void;
-  label: string;
+	onClick: () => void;
+	label: string;
 }> = ({ onClick, label }) => (
-  <button
-    onClick={onClick}
-    className="group inline-flex items-center gap-2 text-red-600 font-medium py-2 px-4 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-600"
-  >
-    <span>{label}</span>
-    <ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
-  </button>
+	<button
+		onClick={onClick}
+		className="group inline-flex items-center gap-2 text-red-600 font-medium py-2 px-4 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-600">
+		<span>{label}</span>
+		<ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
+	</button>
 );
 
 const Research: React.FC = () => {
-  const [filter, setFilter] = useState<string>("all");
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean;
-    title: string;
-    content: string;
-    status: string;
-    link?: string;
-  }>({
-    isOpen: false,
-    title: "",
-    content: "",
-    status: "",
-    link: "",
-  });
+	const [filter, setFilter] = useState<string>("all");
+	const [modalState, setModalState] = useState<{
+		isOpen: boolean;
+		title: string;
+		content: string;
+		status: string;
+		link?: string;
+	}>({
+		isOpen: false,
+		title: "",
+		content: "",
+		status: "",
+		link: "",
+	});
 
-  const research: ResearchItem[] = [
-    {
-      title: "AI Arrhythmia Detection",
-      category: "Cardiology",
-      description: "Deep learning for 98.7% arrhythmia detection.",
-      image: "advanced.jpg",
-      status: "In Progress",
-    },
-    {
-      title: "ECG Trend Analysis",
-      category: "Analytics",
-      description: "Algorithms for ECG data analysis.",
-      image: "insights.jpg",
-      status: "Data Collection",
-    },
-    {
-      title: "Heart Failure Prediction",
-      category: "Cardiology",
-      description: "ML models for heart failure risk prediction.",
-      image: "trusted.png",
-      status: "In Progress",
-    },
-    
-  ];
+	// New state for subscribe modal
+	const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
+	const [email, setEmail] = useState("");
+	const [showNotification, setShowNotification] = useState(false);
 
-  const openModal = (title: string, content: string, status: string, link?: string) => {
-    setModalState({ isOpen: true, title, content, status, link });
-  };
+	const research: ResearchItem[] = [
+		{
+			title: "AI Arrhythmia Detection",
+			category: "Cardiology",
+			description: "Deep learning for 98.7% arrhythmia detection.",
+			image: "advanced.jpg",
+			status: "In Progress",
+		},
+		{
+			title: "ECG Trend Analysis",
+			category: "Analytics",
+			description: "Algorithms for ECG data analysis.",
+			image: "insights.jpg",
+			status: "Data Collection",
+		},
+		{
+			title: "Heart Failure Prediction",
+			category: "Cardiology",
+			description: "ML models for heart failure risk prediction.",
+			image: "trusted.png",
+			status: "In Progress",
+		},
+	];
 
-  const closeModal = () => {
-    setModalState({ isOpen: false, title: "", content: "", status: "", link: "" });
-  };
+	const openModal = (
+		title: string,
+		content: string,
+		status: string,
+		link?: string
+	) => {
+		setModalState({ isOpen: true, title, content, status, link });
+	};
 
-  const clearFilter = () => setFilter("all");
+	const closeModal = () => {
+		setModalState({
+			isOpen: false,
+			title: "",
+			content: "",
+			status: "",
+			link: "",
+		});
+	};
 
-  return (
+	// Handlers for subscribe modal
+	const openSubscribeModal = () => setIsSubscribeOpen(true);
+	const closeSubscribeModal = () => {
+		setIsSubscribeOpen(false);
+		setEmail("");
+	};
+	const handleSubscribeSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		// Here you can add logic to handle the email submission, e.g., API call
+		closeSubscribeModal();
+		setShowNotification(true);
+		setTimeout(() => setShowNotification(false), 3000);
+	};
+
+	const clearFilter = () => setFilter("all");
+
+	return (
 		<div className="flex flex-col min-h-screen bg-gray-50">
 			<style>{`
         html { scroll-behavior: smooth; }
@@ -469,158 +492,19 @@ const Research: React.FC = () => {
 							<Link
 								to="/contact"
 								className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
-								<HeartPulseIcon className="w-5 h-5" />
 								Contact Us
 							</Link>
-							<Link
-								to="/subscribe"
+							<button
+								onClick={openSubscribeModal}
 								className="border-2 border-white hover:bg-white/20 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
 								Subscribe
-							</Link>
+							</button>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Footer */}
-			<footer className="bg-gray-900 bg-opacity-95 py-12 px-4 sm:px-6 md:px-8">
-				<div className="container mx-auto max-w-7xl">
-					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-						<div>
-							<img
-								src="/real_logo.png"
-								alt="CardiacTek Logo"
-								className="w-24 h-auto mb-4 rounded transition-all duration-300 hover:shadow-[0_0_10px_rgba(220,38,38,0.3)]"
-							/>
-							<p className="text-gray-400 text-sm max-w-xs leading-relaxed">
-								AI-driven cardiac care.
-							</p>
-							<div className="flex gap-4 mt-4">
-								<a
-									href="https://twitter.com"
-									className="text-gray-400 hover:text-red-600 transition-all duration-300 hover:scale-105"
-									aria-label="Twitter">
-									<TwitterIcon className="h-5 w-5" />
-								</a>
-								<a
-									href="https://linkedin.com"
-									className="text-gray-400 hover:text-red-600 transition-all duration-300 hover:scale-105"
-									aria-label="LinkedIn">
-									<LinkedinIcon className="h-5 w-5" />
-								</a>
-							</div>
-						</div>
-						<div>
-							<h4 className="font-semibold mb-4 text-base border-b border-red-600 pb-2 leading-tight">
-								Clinical Tools
-							</h4>
-							<ul className="space-y-3 text-sm text-gray-400 leading-relaxed">
-								<li>
-									<Link
-										to="/ecg-analysis"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										ECG Analysis
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/risk-assessment"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										Risk Assessment
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/treatment-guidelines"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										Treatment Guidelines
-									</Link>
-								</li>
-							</ul>
-						</div>
-						<div>
-							<h4 className="font-semibold mb-4 text-base border-b border-red-600 pb-2 leading-tight">
-								Resources
-							</h4>
-							<ul className="space-y-3 text-sm text-gray-400 leading-relaxed">
-								<li>
-									<Link
-										to="/clinical-guidance"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										Clinical Guidance
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/research-library"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										Research Library
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/training"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										Clinician Training
-									</Link>
-								</li>
-							</ul>
-						</div>
-						<div>
-							<h4 className="font-semibold mb-4 text-base border-b border-red-600 pb-2 leading-tight">
-								Compliance
-							</h4>
-							<ul className="space-y-3 text-sm text-gray-400 leading-relaxed">
-								<li>
-									<Link
-										to="/hipaa"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										HIPAA Compliance
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/gdpr"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										GDPR
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/quality"
-										className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-										Quality Management
-									</Link>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div className="border-t border-red-600 pt-6 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-400">
-						<p className="leading-relaxed">
-							© {new Date().getFullYear()} CardiacTek. For professional use.
-						</p>
-						<div className="flex gap-6 mt-3 sm:mt-0">
-							<Link
-								to="/privacy"
-								className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-								Privacy Policy
-							</Link>
-							<Link
-								to="/terms"
-								className="hover:text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-medium">
-								Terms of Use
-							</Link>
-							<button
-								onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-								className="hover:text-red-600 transition-all duration-300 font-medium flex items-center gap-2 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-gray-900"
-								aria-label="Back to top">
-								<ArrowUpIcon className="h-5 w-5" />
-								Back to Top
-							</button>
-						</div>
-					</div>
-				</div>
-			</footer>
+			<Footer />
 
 			{/* Research Modal */}
 			<ResearchModal
@@ -631,6 +515,48 @@ const Research: React.FC = () => {
 				status={modalState.status}
 				link={modalState.link}
 			/>
+
+			{/* Subscribe Modal */}
+			{isSubscribeOpen && (
+				<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in">
+					<div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 relative shadow-2xl animate-slide-up">
+						<button
+							onClick={closeSubscribeModal}
+							className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+							aria-label="Close modal">
+							<XIcon className="w-6 h-6" />
+						</button>
+						<h3 className="text-2xl font-bold text-gray-900 mb-4">Subscribe</h3>
+						<form
+							onSubmit={handleSubscribeSubmit}
+							className="flex flex-col gap-4">
+							<label htmlFor="email" className="text-gray-700 font-medium">
+								Email Address
+							</label>
+							<input
+								type="email"
+								id="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								required
+								className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+								placeholder="Enter your email"
+							/>
+							<button
+								type="submit"
+								className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300">
+								Subscribe
+							</button>
+						</form>
+					</div>
+				</div>
+			)}
+			{/* Notification Popup */}
+			{showNotification && (
+				<div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-white text-red-600 px-6 py-3 rounded-lg shadow-lg animate-fade-in z-50 border border-red-600">
+					Added to mailing list
+				</div>
+			)}
 		</div>
 	);
 };
