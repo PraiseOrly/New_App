@@ -245,16 +245,11 @@ const ArrhythmiaDetectionPage: React.FC = () => {
 				<div className="container mx-auto max-w-7xl">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						<div className="order-2 lg:order-1">
-							<video
-								src="/arrhythmia-visualization.mp4"
-								className="rounded-xl shadow-lg w-full h-auto"
-								controls
-								autoPlay
-								muted
-								loop
-								playsInline>
-								Your browser does not support the video tag.
-							</video>
+						<img
+							src="/advanced.jpg"
+							alt="Arrhythmia visualization image"
+							className="rounded-xl shadow-lg w-full h-auto object-cover"
+						/>
 						</div>
 						<div className="order-1 lg:order-2">
 							<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 animate-fade-in">
