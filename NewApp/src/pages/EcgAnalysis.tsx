@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import {
 	ActivityIcon,
 	UploadIcon,
@@ -1140,27 +1141,8 @@ const EcgAnalysis: React.FC = () => {
 			</section>
 
 			{/* Footer */}
-			<footer className="bg-gray-900 text-white py-8 px-4">
-				<div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center">
-					<div className="flex items-center gap-2 mb-4 sm:mb-0">
-						<ActivityIcon className="w-6 h-6 text-red-600" />
-						<span className="text-sm font-medium">
-							CardiacAI © {new Date().getFullYear()}
-						</span>
-					</div>
-					<nav className="flex gap-4 text-sm text-gray-400">
-						<Link to="/privacy" className="hover:text-white transition-colors">
-							Privacy Policy
-						</Link>
-						<Link to="/terms" className="hover:text-white transition-colors">
-							Terms of Use
-						</Link>
-						<Link to="/contact" className="hover:text-white transition-colors">
-							Contact Us
-						</Link>
-					</nav>
-				</div>
-			</footer>
+				<Footer />
+			
 
 			{/* Processing Modal */}
 			<ProcessingModal
