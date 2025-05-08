@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import RequestDemoModal from "../components/RequestDemoModal";
 import { HeartPulseIcon, ChevronDownIcon, XIcon, DownloadIcon, PlayCircleIcon, ArrowRightIcon } from "lucide-react";
 
 interface LazyImageProps {
@@ -75,8 +76,8 @@ const Slideshow: React.FC = () => {
     },
     {
       src: "/innovate.jpg",
-      alt: "Innovative medical solutions",
-      caption: "AI-Powered ECG Analysis",
+      alt: "Arrhythmia detection technology",
+      caption: "AI-Powered Arrhythmia Detection",
     },
     {
       src: "/insights.jpg",
@@ -152,7 +153,7 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, onClose }) => {
         </button>
         <h3 className="text-2xl font-bold text-gray-900 mb-4">Download Resource</h3>
         <p className="text-gray-600 mb-6 leading-relaxed">
-          Download our comprehensive guide on AI-driven arrhythmia detection, including case studies and clinical validation data.
+          Download our guide on AI-driven arrhythmia detection, including case studies and technical insights.
         </p>
         <a
           href="/resources/arrhythmia-guide.pdf"
@@ -167,9 +168,10 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-const ArrhythmiaDetection: React.FC = () => {
+const ArrhythmiaDetectionPage: React.FC = () => {
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [requestDemoOpen, setRequestDemoOpen] = useState(false);
 
   const toggleFaq = (index: number) => {
     setActiveFaqIndex(activeFaqIndex === index ? null : index);
@@ -202,19 +204,19 @@ const ArrhythmiaDetection: React.FC = () => {
 					<div className="flex flex-col lg:flex-row items-center gap-8">
 						<div className="lg:w-1/2 text-center lg:text-left">
 							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight animate-fade-in">
-								Precision Arrhythmia Detection
+								Advanced Arrhythmia Detection
 							</h1>
 							<p className="text-base sm:text-lg text-gray-600 mb-6 max-w-md mx-auto lg:mx-0 animate-fade-in">
-								Our AI achieves 98.7% sensitivity in detecting arrhythmias,
-								enabling early diagnosis and improved patient outcomes.
+								Our AI achieves 98.7% sensitivity in identifying cardiac
+								arrhythmias, supporting clinicians with precise diagnostics.
 							</p>
 							<div className="flex flex-col sm:flex-row gap-4 justify-start lg:justify-start">
-								<Link
-									to="/demo"
+								<button
+									onClick={() => setRequestDemoOpen(true)}
 									className="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 animate-fade-in">
 									<PlayCircleIcon className="w-5 h-5" />
 									Request Demo
-								</Link>
+								</button>
 							</div>
 						</div>
 						<div className="lg:w-1/2">
@@ -230,7 +232,7 @@ const ArrhythmiaDetection: React.FC = () => {
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						<div className="order-2 lg:order-1">
 							<video
-								src="/arrhythmia-demo.mp4"
+								src="/arrhythmia-visualization.mp4"
 								className="rounded-xl shadow-lg w-full h-auto"
 								controls
 								autoPlay
@@ -245,21 +247,19 @@ const ArrhythmiaDetection: React.FC = () => {
 								How Our AI Detects Arrhythmias
 							</h2>
 							<p className="text-gray-600 mb-4 text-sm sm:text-base animate-fade-in">
-								Our deep learning models analyze ECG data to identify subtle
-								patterns indicative of arrhythmias, such as atrial fibrillation,
-								ventricular tachycardia, and more. With 98.7% sensitivity, our
-								system supports clinicians in making accurate diagnoses.
+								Our deep learning models identify subtle patterns indicative of
+								arrhythmias, such as atrial fibrillation, ventricular
+								tachycardia, and more, with 98.7% sensitivity.
 							</p>
 							<ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm sm:text-base mb-4 animate-fade-in">
-								<li>Real-time ECG pattern recognition</li>
+								<li>Real-time arrhythmia pattern recognition</li>
 								<li>Automated alerts for critical rhythms</li>
-								<li>Integration with EHR systems</li>
 								<li>Clinician-verified results</li>
 							</ul>
 							<Link
-								to="/ecg-analysis"
+								to="/arrhythmia-detection"
 								className="inline-flex items-center gap-2 text-red-600 font-medium py-2 px-4 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-300 animate-fade-in">
-								Start ECG Analysis
+								Explore Arrhythmia Detection
 								<ArrowRightIcon className="w-4 h-4" />
 							</Link>
 						</div>
@@ -283,12 +283,12 @@ const ArrhythmiaDetection: React.FC = () => {
 							{
 								question: "How does the system ensure accuracy?",
 								answer:
-									"The AI is trained on millions of ECGs and validated by cardiologists. It uses deep learning to identify patterns and provides clinician-verified results.",
+									"The AI uses deep learning to identify patterns and is validated by cardiologists, ensuring 98.7% sensitivity in arrhythmia detection.",
 							},
 							{
-								question: "Is the system compatible with existing ECG devices?",
+								question: "Can the system integrate with hospital systems?",
 								answer:
-									"Yes, our platform integrates with most standard ECG devices and supports HL7 and DICOM standards for seamless data transfer.",
+									"Yes, our platform supports standard healthcare protocols for seamless integration with hospital workflows.",
 							},
 						].map((faq, index) => (
 							<div
@@ -339,19 +339,19 @@ const ArrhythmiaDetection: React.FC = () => {
 							Experience Our Arrhythmia Detection
 						</h2>
 						<p className="text-base sm:text-lg mb-6">
-							Schedule a demo to see how our AI transforms cardiac diagnostics.
+							Schedule a demo to see how our AI enhances arrhythmia diagnostics.
 						</p>
-						<Link
-							to="/demo"
+						<button
+							onClick={() => setRequestDemoOpen(true)}
 							className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 mx-auto">
 							<PlayCircleIcon className="w-5 h-5" />
 							Request Demo
-						</Link>
+						</button>
 					</div>
 				</div>
 			</section>
 
-			{/* Minimalistic Footer */}
+			{/* Footer */}
 			<footer className="bg-gray-900 text-white py-8 px-4">
 				<div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center">
 					<div className="flex items-center gap-2 mb-4 sm:mb-0">
@@ -379,8 +379,13 @@ const ArrhythmiaDetection: React.FC = () => {
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
 			/>
+
+			<RequestDemoModal
+				isOpen={requestDemoOpen}
+				onClose={() => setRequestDemoOpen(false)}
+			/>
 		</div>
 	);
 };
 
-export default ArrhythmiaDetection;
+export default ArrhythmiaDetectionPage;
