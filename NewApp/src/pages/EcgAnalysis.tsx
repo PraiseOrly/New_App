@@ -1,7 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { ActivityIcon, ChevronDownIcon, XIcon, DownloadIcon, PlayCircleIcon } from "lucide-react";
+import {
+  ActivityIcon,
+  UploadIcon,
+  PlayCircleIcon,
+  ChevronDownIcon,
+  InfoIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  FileTextIcon,
+  XIcon,
+} from "lucide-react";
 
 interface LazyImageProps {
   src: string;
@@ -9,7 +19,6 @@ interface LazyImageProps {
   className?: string;
   width: number;
   height: number;
-  eager?: boolean;
 }
 
 const LazyImage: React.FC<LazyImageProps> = ({
@@ -18,14 +27,11 @@ const LazyImage: React.FC<LazyImageProps> = ({
   className = "",
   width,
   height,
-  eager = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (eager) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -42,7 +48,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
     if (imgRef.current) observer.observe(imgRef.current);
 
     return () => observer.disconnect();
-  }, [eager]);
+  }, []);
 
   return (
     <img
@@ -52,91 +58,449 @@ const LazyImage: React.FC<LazyImageProps> = ({
       width={width}
       height={height}
       className={`${className} ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-500`}
-      loading={eager ? "eager" : "lazy"}
+      loading="lazy"
       decoding="async"
       onLoad={() => setIsLoaded(true)}
     />
   );
 };
 
-interface Slide {
-  src: string;
-  alt: string;
-  caption: string;
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  details?: string;
+  link?: string;
 }
 
-const Slideshow: React.FC = () => {
-  const slides: Slide[] = [
-    {
-      src: "https://images.pexels.com/photos/7088531/pexels-photo-7088531.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      alt: "ECG equipment",
-      caption: "Advanced ECG Analysis",
-    },
-    {
-      src: "https://images.pexels.com/photos/305568/pexels-photo-305568.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      alt: "ECG monitor",
-      caption: "Real-Time Insights",
-    },
-    {
-      src: "https://images.pexels.com/photos/4164760/pexels-photo-4164760.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      alt: "Clinical dashboard",
-      caption: "AI-Powered Diagnostics",
-    },
-  ];
+const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, details }) => (
+  <div className="bg-red-50 p-6 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div className="text-red-600 mb-4">{icon}</div>
+    <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+    <p className="text-gray-600 text-sm mb-2">{description}</p>
+    {details && <p className="text-gray-500 text-xs">{details}</p>}
+  </div>
+);
 
-  const [currentSlide, setCurrentSlide] = useState(0);
+interface InstructionStepProps {
+  number: number;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [slides.length]);
+const InstructionStep: React.FC<InstructionStepProps> = ({ number, icon, title, description }) => (
+  <div className="flex items-start gap-4">
+    <div className="flex-shrink-0 w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center text-lg font-bold">
+      {number}
+    </div>
+    <div>
+      <div className="text-red-600 mb-2">{icon}</div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-1">{title}</h3>
+      <p className="text-gray-600 text-sm">{description}</p>
+    </div>
+  </div>
+);
+
+const Video = {
+  maxWidth: '100%',
+  height: 'auto',
+  borderRadius: '0.5rem',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+};
+
+interface EcgFormProps {
+  onProcess: (data: {
+    images: File[];
+    leadType: string;
+    voltage: string;
+    speed: string;
+    reason: string;
+    otherReason: string;
+  }) => void;
+}
+
+const EcgForm: React.FC<EcgFormProps> = ({ onProcess }) => {
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [leadType, setLeadType] = useState("");
+  const [voltage, setVoltage] = useState("");
+  const [speed, setSpeed] = useState("");
+  const [reason, setReason] = useState("");
+  const [otherReason, setOtherReason] = useState("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isDragging, setIsDragging] = useState(false);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  const validateImages = (files: File[]) => {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const validTypes = ["image/jpeg", "image/png"];
+    for (const file of files) {
+      if (!validTypes.includes(file.type)) {
+        return "Only JPEG and PNG images are supported.";
+      }
+      if (file.size > maxSize) {
+        return "Each image must be less than 5MB.";
+      }
+    }
+    if (files.length + images.length > 3) {
+      return "You can upload up to 3 images.";
+    }
+    return "";
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = Array.from(e.target.files || []);
+    const error = validateImages(newFiles);
+    if (error) {
+      setErrors({ ...errors, images: error });
+      return;
+    }
+    setImages([...images, ...newFiles]);
+    const previews = newFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews([...imagePreviews, ...previews]);
+    setErrors({ ...errors, images: "" });
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const newFiles = Array.from(e.dataTransfer.files);
+    const error = validateImages(newFiles);
+    if (error) {
+      setErrors({ ...errors, images: error });
+      return;
+    }
+    setImages([...images, ...newFiles]);
+    const previews = newFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews([...imagePreviews, ...previews]);
+    setErrors({ ...errors, images: "" });
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (images.length === 0) newErrors.images = "Please upload at least one ECG image.";
+    if (!leadType) newErrors.leadType = "Please select a lead type.";
+    if (!voltage) newErrors.voltage = "Please select a voltage.";
+    if (!speed) newErrors.speed = "Please select a speed.";
+    if (!reason) newErrors.reason = "Please select a reason.";
+    if (reason === "other" && !otherReason.trim())
+      newErrors.otherReason = "Please specify the reason.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onProcess({ images, leadType, voltage, speed, reason, otherReason });
+    }
+  };
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[400px] rounded-xl overflow-hidden shadow-lg">
-      {slides.map((slide, index) => (
+    <form onSubmit={handleSubmit} className="space-y-6" aria-live="polite">
+      <div>
+        <label
+          htmlFor="image-upload"
+          className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+        >
+          Upload ECG Images (Max 3)
+          <span
+            className="relative group"
+            aria-label="Images must be JPEG or PNG, up to 5MB each."
+          >
+            <InfoIcon className="w-4 h-4 text-gray-500" />
+            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 w-48">
+              Upload up to 3 JPEG or PNG images, each under 5MB.
+            </div>
+          </span>
+        </label>
         <div
-          key={index}
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-            index === currentSlide ? "opacity-100 scale-100" : "opacity-0 scale-105"
+          ref={dropRef}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          className={`border-2 border-dashed rounded-lg p-6 text-center ${
+            isDragging ? "border-red-600 bg-red-50" : "border-gray-300 bg-white"
           }`}
         >
-          <LazyImage
-            src={slide.src}
-            alt={slide.alt}
-            className="w-full h-full object-cover"
-            width={1200}
-            height={400}
-            eager={index === 0}
+          <input
+            type="file"
+            id="image-upload"
+            accept="image/jpeg,image/png"
+            multiple
+            onChange={handleImageChange}
+            className="hidden"
+            aria-describedby="image-error"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6">
-            <h3 className="text-white text-lg sm:text-2xl font-bold">{slide.caption}</h3>
-          </div>
+          <label
+            htmlFor="image-upload"
+            className="cursor-pointer flex flex-col items-center gap-2"
+          >
+            <UploadIcon className="w-8 h-8 text-red-600" />
+            <span className="text-sm text-gray-600">
+              Drag and drop images or click to upload
+            </span>
+          </label>
+          {imagePreviews.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative">
+                  <LazyImage
+                    src={preview}
+                    alt={`ECG preview ${index + 1}`}
+                    className="h-24 w-auto rounded-lg shadow-md"
+                    width={96}
+                    height={96}
+                  />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center -mt-2 -mr-2"
+                    aria-label={`Remove image ${index + 1}`}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      ))}
-      <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full ${
-              index === currentSlide ? "bg-white" : "bg-white/50"
-            } hover:bg-white/80 transition-colors duration-300`}
-            onClick={() => setCurrentSlide(index)}
-            aria-label={`Slide ${index + 1}`}
-          />
-        ))}
+        {errors.images && (
+          <p id="image-error" className="mt-1 text-sm text-red-600">
+            {errors.images}
+          </p>
+        )}
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label
+            htmlFor="lead-type"
+            className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+          >
+            Lead Type
+            <span
+              className="relative group"
+              aria-label="Select the number of leads used in the ECG."
+            >
+              <InfoIcon className="w-4 h-4 text-gray-500" />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 w-48">
+                Choose the lead configuration (e.g., 12-lead for standard ECG).
+              </div>
+            </span>
+          </label>
+          <div className="relative">
+            <select
+              id="lead-type"
+              value={leadType}
+              onChange={(e) => setLeadType(e.target.value)}
+              className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+              aria-describedby="lead-type-error"
+            >
+              <option value="">Select Lead Type</option>
+              <option value="12-lead">12-Lead</option>
+              <option value="6-lead">6-Lead</option>
+              <option value="5-lead">5-Lead</option>
+              <option value="3-lead">3-Lead</option>
+              <option value="1-lead">1-Lead</option>
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          </div>
+          {errors.leadType && (
+            <p id="lead-type-error" className="mt-1 text-sm text-red-600">
+              {errors.leadType}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="voltage"
+            className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+          >
+            Voltage
+            <span
+              className="relative group"
+              aria-label="Select the voltage scale for the ECG."
+            >
+              <InfoIcon className="w-4 h-4 text-gray-500" />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 w-48">
+                Standard is 10 mm/mV; adjust for signal amplitude.
+              </div>
+            </span>
+          </label>
+          <div className="relative">
+            <select
+              id="voltage"
+              value={voltage}
+              onChange={(e) => setVoltage(e.target.value)}
+              className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+              aria-describedby="voltage-error"
+            >
+              <option value="">Select Voltage</option>
+              <option value="2.5 mm/mV">2.5 mm/mV</option>
+              <option value="5 mm/mV">5 mm/mV</option>
+              <option value="10 mm/mV">10 mm/mV</option>
+              <option value="20 mm/mV">20 mm/mV</option>
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          </div>
+          {errors.voltage && (
+            <p id="voltage-error" className="mt-1 text-sm text-red-600">
+              {errors.voltage}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label
+            htmlFor="speed"
+            className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+          >
+            Speed
+            <span
+              className="relative group"
+              aria-label="Select the paper speed for the ECG."
+            >
+              <InfoIcon className="w-4 h-4 text-gray-500" />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 w-48">
+                Standard is 25 mm/s; higher speeds for detailed waveforms.
+              </div>
+            </span>
+          </label>
+          <div className="relative">
+            <select
+              id="speed"
+              value={speed}
+              onChange={(e) => setSpeed(e.target.value)}
+              className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+              aria-describedby="speed-error"
+            >
+              <option value="">Select Speed</option>
+              <option value="12.5 mm/s">12.5 mm/s</option>
+              <option value="25 mm/s">25 mm/s</option>
+              <option value="50 mm/s">50 mm/s</option>
+              <option value="100 mm/s">100 mm/s</option>
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          </div>
+          {errors.speed && (
+            <p id="speed-error" className="mt-1 text-sm text-red-600">
+              {errors.speed}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="reason"
+            className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+          >
+            Reason for ECG
+            <span
+              className="relative group"
+              aria-label="Select the clinical reason for the ECG."
+            >
+              <InfoIcon className="w-4 h-4 text-gray-500" />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 w-48">
+                Indicate the patient’s symptoms or purpose (e.g., routine checkup).
+              </div>
+            </span>
+          </label>
+          <div className="relative">
+            <select
+              id="reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+              aria-describedby="reason-error"
+            >
+              <option value="">Select Reason</option>
+              <option value="chest pain">Chest Pain</option>
+              <option value="dizziness">Dizziness</option>
+              <option value="shortness of breath">Shortness of Breath</option>
+              <option value="palpitations">Palpitations</option>
+              <option value="syncope">Syncope</option>
+              <option value="fatigue">Fatigue</option>
+              <option value="routine checkup">Routine Checkup</option>
+              <option value="post-procedure">Post-Procedure</option>
+              <option value="other">Other</option>
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          </div>
+          {errors.reason && (
+            <p id="reason-error" className="mt-1 text-sm text-red-600">
+              {errors.reason}
+            </p>
+          )}
+          {reason === "other" && (
+            <div className="mt-4">
+              <input
+                type="text"
+                id="other-reason"
+                value={otherReason}
+                onChange={(e) => setOtherReason(e.target.value)}
+                placeholder="Specify reason"
+                className="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+                aria-describedby="other-reason-error"
+              />
+              {errors.otherReason && (
+                <p id="other-reason-error" className="mt-1 text-sm text-red-600">
+                  {errors.otherReason}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={
+          images.length === 0 ||
+          !leadType ||
+          !voltage ||
+          !speed ||
+          !reason ||
+          (reason === "other" && !otherReason.trim())
+        }
+        className="w-full sm:w-auto bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-red-700 focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
+      >
+        <ActivityIcon className="w-5 h-5" />
+        Process ECG
+      </button>
+    </form>
   );
 };
 
-interface ResourceModalProps {
+interface ProcessingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  data: {
+    images: File[];
+    leadType: string;
+    voltage: string;
+    speed: string;
+    reason: string;
+    otherReason: string;
+  };
 }
 
-const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, onClose }) => {
+const ProcessingModal: React.FC<ProcessingModalProps> = ({ isOpen, onClose, data }) => {
   if (!isOpen) return null;
 
   return (
@@ -149,38 +513,136 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, onClose }) => {
         >
           <XIcon className="w-6 h-6" />
         </button>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">Download ECG Guide</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-4">ECG Processing Initiated</h3>
         <p className="text-gray-600 mb-6 leading-relaxed">
-          Access our detailed guide on AI-powered 12-lead ECG analysis, including case studies and technical specifications.
+          Your ECG analysis has started. Below is a summary of your submission:
         </p>
-        <a
-          href="/resources/ecg-analysis-guide.pdf"
-          download
+        <ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm mb-6">
+          <li>Images: {data.images.length} uploaded</li>
+          <li>Lead Type: {data.leadType}</li>
+          <li>Voltage: {data.voltage}</li>
+          <li>Speed: {data.speed}</li>
+          <li>Reason: {data.reason === "other" ? data.otherReason : data.reason}</li>
+        </ul>
+        <Link
+          to="/results/123"
           className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300 inline-flex items-center gap-2"
         >
-          Download Now
-          <DownloadIcon className="w-4 h-4" />
-        </a>
+          View Results (Mock)
+          <FileTextIcon className="w-4 h-4" />
+        </Link>
       </div>
     </div>
   );
 };
 
+interface FaqItemProps {
+  question: string;
+  answer: string;
+}
+
+const FaqItem: React.FC<FaqItemProps> = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-red-50 rounded-lg mb-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3 text-left flex items-center justify-between text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-red-600"
+        aria-expanded={isOpen}
+        aria-controls={`faq-${question}`}
+      >
+        <span>{question}</span>
+        <ChevronDownIcon
+          className={`w-5 h-5 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      {isOpen && (
+        <div id={`faq-${question}`} className="px-4 pb-3 text-gray-600 text-sm">
+          {answer}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const EcgAnalysis: React.FC = () => {
-  const [isAiView, setIsAiView] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    data: {
+      images: File[];
+      leadType: string;
+      voltage: string;
+      speed: string;
+      reason: string;
+      otherReason: string;
+    };
+  }>({
+    isOpen: false,
+    data: { images: [], leadType: "", voltage: "", speed: "", reason: "", otherReason: "" },
+  });
+
+  // State for feature modal
+  const [featureModalOpen, setFeatureModalOpen] = React.useState(false);
+  const [selectedFeature, setSelectedFeature] = React.useState<FeatureCardProps | null>(null);
+
+  const openFeatureModal = (feature: FeatureCardProps) => {
+    setSelectedFeature(feature);
+    setFeatureModalOpen(true);
+  };
+
+  const closeFeatureModal = () => {
+    setFeatureModalOpen(false);
+    setSelectedFeature(null);
+  };
+
+  const handleProcessEcg = (data: {
+    images: File[];
+    leadType: string;
+    voltage: string;
+    speed: string;
+    reason: string;
+    otherReason: string;
+  }) => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setModalState({ isOpen: true, data });
+      console.log("ECG Processing:", {
+        images: data.images.map((img) => img.name),
+        leadType: data.leadType,
+        voltage: data.voltage,
+        speed: data.speed,
+        reason: data.reason === "other" ? data.otherReason : data.reason,
+      });
+    }, 2000);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <style>{`
+        html { scroll-behavior: smooth; }
+        .animate-pulse-dot::after {
+          content: '';
+          display: inline-block;
+          width: 0.4rem;
+          height: 0.4rem;
+          margin-left: 0.5rem;
+          background-color: #dc2626;
+          border-radius: 50%;
+          animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.3; }
+          100% { opacity: 1; }
+        }
         .animate-fade-in {
           animation: fadeIn 0.6s ease-out;
         }
         .animate-slide-up {
           animation: slideUp 0.4s ease-out;
-        }
-        .animate-waveform {
-          animation: pulseWave 2s infinite;
         }
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -190,131 +652,210 @@ const EcgAnalysis: React.FC = () => {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pulseWave {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-          100% { transform: translateY(0); }
-        }
       `}</style>
 
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-red-50 to-white py-12 px-4">
+      <section
+        className="mt-12 bg-gradient-to-br from-red-50 via-white to-red-50 py-12 px-4 sm:py-16"
+        aria-labelledby="hero-heading"
+      >
+        <div className="container mx-auto max-w-7xl text-center">
+          {/* <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full mb-4 shadow-sm animate-fade-in">
+            <span className="text-red-600 font-medium animate-pulse-dot">
+              98.7% Accuracy
+            </span>
+          </div> */}
+          <h1
+            id="hero-heading"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight animate-fade-in"
+          >
+            Analyze Your ECG with{" "}
+            <span className="text-red-600">AI Precision</span>
+          </h1>
+          <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-xl mx-auto animate-fade-in">
+            Upload or capture ECG images for fast, accurate analysis powered by AI.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() =>
+                document.getElementById("ecg-form")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 animate-fade-in"
+            >
+              <ActivityIcon className="w-5 h-5" />
+              Start Analysis
+            </button>
+            <button
+              onClick={() =>
+                document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 animate-fade-in"
+            >
+              Learn More
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Modal */}
+      {featureModalOpen && selectedFeature && (
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="feature-modal-title"
+        >
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 relative shadow-2xl">
+            <button
+              onClick={closeFeatureModal}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+              aria-label="Close modal"
+            >
+              <XIcon className="w-6 h-6" />
+            </button>
+            <h3 id="feature-modal-title" className="text-2xl font-bold text-gray-900 mb-4">
+              {selectedFeature.title}
+            </h3>
+            <p className="text-gray-600 text-base">{selectedFeature.description}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Features Section */}
+      <section className="py-12 px-4 bg-white" id="features">
         <div className="container mx-auto max-w-7xl">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
-            <div className="lg:w-1/2 text-center lg:text-left">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight animate-fade-in">
-                Advanced 12-Lead ECG Analysis
-              </h1>
-              <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-md mx-auto lg:mx-0 animate-fade-in">
-                Our AI delivers 98.7% accuracy in ECG interpretation, detecting critical conditions like STEMI and arrhythmias.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link
-                  to="/demo"
-                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 animate-fade-in"
-                >
-                  <PlayCircleIcon className="w-5 h-5" />
-                  Request Demo
-                </Link>
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 animate-fade-in"
-                >
-                  <DownloadIcon className="w-5 h-5" />
-                  Download Guide
-                </button>
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 animate-fade-in">
+              Why Choose Our ECG Analysis?
+            </h2>
+            <p className="text-gray-600 max-w-xl mx-auto animate-fade-in">
+              Advanced AI for superior cardiac insights.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <CheckCircleIcon size={28} />,
+                title: "Unmatched Accuracy",
+                description: "98.7% detection of arrhythmias and STEMI with AI precision.",
+                details: "Our AI model has been trained on millions of ECGs to ensure the highest accuracy in detecting cardiac abnormalities.",
+              },
+              {
+                icon: <ClockIcon size={28} />,
+                title: "Real-Time Processing",
+                description: "Instant analysis and critical alerts for timely interventions.",
+                details: "Get immediate feedback on ECGs with processing times under 10 seconds, enabling faster clinical decisions.",
+              },
+              {
+                icon: <FileTextIcon size={28} />,
+                title: "Clinician Integration",
+                description: "Seamless workflow support for verified clinical decisions.",
+                details: "Integrates smoothly with existing clinical systems to provide actionable insights without disrupting workflows.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <FeatureCard {...item} />
               </div>
-            </div>
-            <div className="lg:w-1/2">
-              <Slideshow />
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Comparison Section */}
-      <section className="py-12 px-4 bg-white">
-        <div className="container mx-auto max-w-7xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center animate-fade-in">
-            AI vs. Manual ECG Analysis
-          </h2>
-          <div className="flex justify-center gap-4 mb-8">
-            <button
-              onClick={() => setIsAiView(true)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                isAiView ? "bg-red-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              AI Analysis
-            </button>
-            <button
-              onClick={() => setIsAiView(false)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                !isAiView ? "bg-red-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              Manual Analysis
-            </button>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-slide-up">
-            <div>
-              <LazyImage
-                src={
-                  isAiView
-                    ? "https://images.pexels.com/photos/7088531/pexels-photo-7088531.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                    : "https://images.pexels.com/photos/305568/pexels-photo-305568.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                }
-                alt={isAiView ? "AI ECG analysis" : "Manual ECG analysis"}
-                className="rounded-xl shadow-lg w-full h-auto"
-                width={600}
-                height={400}
-              />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {isAiView ? "AI-Powered Analysis" : "Manual Analysis"}
-              </h3>
-              <p className="text-gray-600 mb-4 text-sm sm:text-base">
-                {isAiView
-                  ? "Our AI analyzes ECGs with 98.7% accuracy, detecting subtle patterns in real-time and providing automated alerts."
-                  : "Manual analysis relies on clinician expertise, which is time-consuming and prone to human error in complex cases."}
-              </p>
-              <ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm sm:text-base">
-                {(
-                  isAiView
-                    ? [
-                        "Real-time pattern recognition",
-                        "Automated critical alerts",
-                        "Clinician-verified results",
-                      ]
-                    : ["Expert review", "Detailed annotations", "Time-intensive process"]
-                ).map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Waveform Animation */}
+      {/* Instructions Section */}
       <section className="py-12 px-4 bg-gray-50">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 animate-fade-in">
+              How to Submit Your ECG
+            </h2>
+            <p className="text-gray-600 max-w-xl mx-auto animate-fade-in">
+              Follow these simple steps to analyze your ECG.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                number: 1,
+                icon: <UploadIcon size={24} />,
+                title: "Upload Images",
+                description: "Select or capture up to 3 JPEG/PNG images.",
+              },
+              {
+                number: 2,
+                icon: <ActivityIcon size={24} />,
+                title: "Configure Settings",
+                description: "Choose lead type, voltage, speed, and reason.",
+              },
+              {
+                number: 3,
+                icon: <CheckCircleIcon size={24} />,
+                title: "Process ECG",
+                description: "Click ‘Process ECG’ to start analysis.",
+              },
+              {
+                number: 4,
+                icon: <FileTextIcon size={24} />,
+                title: "Review Results",
+                description: "View insights or download the report.",
+              },
+            ].map((step, index) => (
+              <div
+                key={index}
+                className="animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <InstructionStep {...step} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ECG Input Form Section */}
+      <section className="py-12 px-4 bg-white" id="ecg-form">
         <div className="container mx-auto max-w-4xl">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center animate-fade-in">
-            Visualizing ECG Data
+            Configure Your ECG Analysis
           </h2>
-          <div className="relative h-32 bg-white rounded-xl shadow-md flex items-center justify-center animate-slide-up">
-            <svg className="w-full h-16 text-red-600" viewBox="0 0 200 50">
-              <path
-                className="animate-waveform"
-                d="M0 25 L20 25 L30 35 L40 15 L50 35 L60 15 L70 25 L80 25 L100 25 L110 35 L120 15 L130 35 L140 15 L150 25 L170 25 L200 25"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
+          <div className="bg-white/10 p-6 sm:p-8 rounded-2xl shadow-lg backdrop-blur-sm animate-slide-up">
+            <EcgForm onProcess={handleProcessEcg} />
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 px-4 bg-white">
+        <div className="container mx-auto max-w-4xl">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center animate-fade-in">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4 animate-slide-up">
+            {[
+              {
+                question: "What image formats are supported?",
+                answer: "We support JPEG and PNG images, up to 5MB each.",
+              },
+              {
+                question: "How long does ECG processing take?",
+                answer: "Processing is near real-time, typically completing in about 10 seconds.",
+              },
+              {
+                question: "Can I upload multiple images?",
+                answer: "Yes, you can upload up to 3 images per analysis for comprehensive review.",
+              },
+              {
+                question: "Is my data secure?",
+                answer: "All uploads are encrypted and comply with HIPAA standards for data security.",
+              },
+            ].map((faq, index) => (
+              <FaqItem key={index} {...faq} />
+            ))}
           </div>
         </div>
       </section>
@@ -324,23 +865,31 @@ const EcgAnalysis: React.FC = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <div className="bg-white/10 p-6 sm:p-8 rounded-2xl backdrop-blur-sm animate-fade-in">
             <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-              See ECG Analysis in Action
+              Elevate Your Cardiac Diagnostics
             </h2>
             <p className="text-base sm:text-lg mb-6">
-              Schedule a demo to explore our AI-powered ECG tools.
+              Join clinicians using AI for better outcomes.
             </p>
-            <Link
-              to="/demo"
-              className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 mx-auto"
-            >
-              <PlayCircleIcon className="w-5 h-5" />
-              Request Demo
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/demo"
+                className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
+              >
+                <PlayCircleIcon className="w-5 h-5" />
+                Request Demo
+              </Link>
+              <Link
+                to="/contact"
+                className="border-2 border-white hover:bg-white/20 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300"
+              >
+                Contact Us
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Minimalistic Footer */}
+      {/* Footer */}
       <footer className="bg-gray-900 text-white py-8 px-4">
         <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center">
           <div className="flex items-center gap-2 mb-4 sm:mb-0">
@@ -360,11 +909,3 @@ const EcgAnalysis: React.FC = () => {
           </nav>
         </div>
       </footer>
-
-      {/* Resource Modal */}
-      <ResourceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </div>
-  );
-};
-
-export default EcgAnalysis;
