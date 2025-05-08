@@ -18,7 +18,6 @@ import Certifications from './pages/Certifications';
 import RiskAssessment from './pages/RiskAssessment';
 import LongitudinalTracking from './pages/LongitudinalTracking';
 import EhrIntegration from './pages/EhrIntegration';
-import Demo from './pages/Demo';
 import TreatmentGuidelines from './pages/TreatmentGuidelines';
 import ClinicalGuidance from './pages/ClinicalGuidance';
 import ResearchLibrary from './pages/ResearchLibrary';
@@ -54,7 +53,6 @@ export function App() {
           <Route path="/risk-assessment" element={<RiskAssessment />} />
           <Route path="/longitudinal-tracking" element={<LongitudinalTracking />} />
           <Route path="/ehr-integration" element={<EhrIntegration />} />
-          <Route path="/demo" element={<Demo />} />
           <Route path="/treatment-guidelines" element={<TreatmentGuidelines />} />
           <Route path="/clinical-guidance" element={<ClinicalGuidance />} />
           <Route path="/research-library" element={<ResearchLibrary />} />
