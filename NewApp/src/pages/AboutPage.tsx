@@ -189,32 +189,6 @@ const AboutPage = () => {
 						</div>
 					</div>
 				</section>
-
-				{/* CTA Section */}
-				<section className="bg-gray-900 text-white py-20">
-					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-						<div className="bg-white/10 p-8 rounded-2xl backdrop-blur-sm animate-fade-in">
-							<h2 className="text-3xl font-bold mb-6">
-								Join the Cardiac Care Revolution
-							</h2>
-							<p className="text-xl mb-8 max-w-2xl mx-auto">
-								Discover how CardiacTek is transforming cardiovascular health.
-							</p>
-							<div className="flex flex-col sm:flex-row gap-4 justify-center">
-								<Link
-									to="/demo"
-									className="bg-red-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2">
-									Schedule Demo
-								</Link>
-								<Link
-									to="/contact"
-									className="border-2 border-white px-8 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors duration-300 focus:ring-2 focus:ring-white focus:ring-offset-2">
-									Contact Us
-								</Link>
-							</div>
-						</div>
-					</div>
-				</section>
 			</main>
 
 			{/* Footer */}
