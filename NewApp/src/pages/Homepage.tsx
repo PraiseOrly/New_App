@@ -341,7 +341,7 @@ const Homepage: React.FC = () => {
 						]}
 						heightClass="h-[200px] sm:h-[300px] mb-8"
 					/>
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+					<div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
 						{[
 							{
 								icon: (
@@ -350,8 +350,8 @@ const Homepage: React.FC = () => {
 										size={36}
 									/>
 								),
-								value: "98.7%",
-								text: "Sensitivity in arrhythmia detection",
+								value: "AI-Powered",
+								text: "Arrhythmia Detection",
 								modal: {
 									title: "Arrhythmia Detection",
 									content:
@@ -372,6 +372,22 @@ const Homepage: React.FC = () => {
 									title: "ECG Analysis Volume",
 									content:
 										"Leveraging thousands of ECGs to train and enhance our model, we’re building a platform that will scale with healthcare systems while ensuring accuracy and dependability.",
+									link: "/ecg-analysis",
+								},
+							},
+							{
+								icon: (
+									<HeartPulseIcon
+										className="text-red-600 mx-auto mb-4"
+										size={36}
+									/>
+								),
+								value: "AI-Powered",
+								text: "ECG Analysis",
+								modal: {
+									title: "ECG Analysis",
+									content:
+										"Our AI-powered ECG analysis model classifies uploaded ECG images into four categories: Normal, Abnormal Heartbeat, History of Myocardial Infarction (MI), and Acute Myocardial Infarction.",
 									link: "/ecg-analysis",
 								},
 							},
