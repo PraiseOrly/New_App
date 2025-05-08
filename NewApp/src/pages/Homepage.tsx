@@ -267,8 +267,8 @@ const Homepage: React.FC = () => {
 								<span className="text-red-600">with AI</span>
 							</h1>
 							<p className="text-base sm:text-lg text-gray-600 mb-6 max-w-md mx-auto lg:mx-0 animate-fade-in">
-								Empowering clinicians with AI-driven insights for precise
-								diagnostics and better patient outcomes.
+								Empowering clinicians and patients with AI-driven insights for
+								precise diagnostics and improved cardiovascular care outcomes.
 							</p>
 							<div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
 								<Link
