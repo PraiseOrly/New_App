@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { HeartPulseIcon, XIcon, DownloadIcon } from "lucide-react";
+import Footer from "../components/Footer";
 
 interface LazyImageProps {
 	src: string;
@@ -214,43 +215,110 @@ const RiskAssessment: React.FC = () => {
 		return Object.keys(newErrors).length === 0;
 	};
 
-	const calculateASCVD = async (e: React.FormEvent) => {
+	const calculateASCVD = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!validateForm()) return;
 
-		try {
-			const age = parseInt(formData.age);
-			const cholesterol = parseInt(formData.cholesterol);
-			const hdl = parseInt(formData.hdl);
-			const bp = parseInt(formData.bp);
+		const age = parseInt(formData.age);
+		const total_chol = parseInt(formData.cholesterol);
+		const hdl = parseInt(formData.hdl);
+		const sbp = parseInt(formData.bp);
+		const is_diabetic = formData.diabetes;
+		const is_smoker = formData.smoker;
+		const gender = formData.gender;
 
-			const response = await fetch("/api/risk-assessment", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					age,
-					gender: formData.gender,
-					cholesterol,
-					hdl,
-					bp,
-					diabetes: formData.diabetes,
-					smoker: formData.smoker,
-				}),
-			});
+		// Calculate cholesterol ratio
+		const chol_ratio = total_chol / hdl;
 
-			if (!response.ok) {
-				throw new Error(`API error: ${response.statusText}`);
-			}
+		let risk_score = 0;
 
-			const result = await response.json();
+		// Age factor
+		if (age < 40) {
+			risk_score += 1;
+		} else if (age <= 59) {
+			risk_score += 3;
+		} else {
+			risk_score += 5;
+		}
 
-			setRiskScore(result.riskScore);
-			setRiskLevel(result.riskLevel);
-			setRecommendations(result.recommendations);
-		} catch (error) {
-			console.error("Error calculating ASCVD risk:", error);
+		// Cholesterol ratio factor
+		if (chol_ratio > 5) {
+			risk_score += 3;
+		} else if (chol_ratio > 4) {
+			risk_score += 2;
+		} else {
+			risk_score += 1;
+		}
+
+		// Blood pressure factor
+		if (sbp >= 140) {
+			risk_score += 3;
+		} else if (sbp >= 120) {
+			risk_score += 2;
+		} else {
+			risk_score += 1;
+		}
+
+		// Smoking
+		if (is_smoker) {
+			risk_score += 3;
+		}
+
+		// Diabetes
+		if (is_diabetic) {
+			risk_score += 4;
+		}
+
+		// Gender modifier
+		if (gender.toLowerCase() === "female") {
+			risk_score -= 2;
+		}
+
+		// Final risk interpretation
+		let category = "";
+		if (risk_score >= 12) {
+			category = "High Risk (≥20%)";
+		} else if (risk_score >= 8) {
+			category = "Intermediate Risk (7.5–19.9%)";
+		} else if (risk_score >= 5) {
+			category = "Borderline Risk (5–7.4%)";
+		} else {
+			category = "Low Risk (<5%)";
+		}
+
+		setRiskScore(risk_score);
+		setRiskLevel(category);
+		setRecommendations(getRecommendations(category));
+		setIsModalOpen(true);
+	};
+
+	const getRecommendations = (category: string): string[] => {
+		switch (category) {
+			case "High Risk (≥20%)":
+				return [
+					"Initiate statin therapy",
+					"Strict lifestyle modifications",
+					"Frequent monitoring",
+				];
+			case "Intermediate Risk (7.5–19.9%)":
+				return [
+					"Consider statin therapy",
+					"Encourage lifestyle changes",
+					"Schedule follow-up",
+				];
+			case "Borderline Risk (5–7.4%)":
+				return [
+					"Adopt heart-healthy diet",
+					"Increase physical activity",
+					"Monitor risk factors",
+				];
+			case "Low Risk (<5%)":
+			default:
+				return [
+					"Maintain healthy lifestyle",
+					"Regular physical activity",
+					"Balanced diet",
+				];
 		}
 	};
 
@@ -524,82 +592,64 @@ const RiskAssessment: React.FC = () => {
 									/>
 								</div>
 							</div>
-						<button
-							type="submit"
-							className="mt-6 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 w-full sm:w-auto">
-							Calculate Risk
-						</button>
-					</form>
+							<button
+								type="submit"
+								className="mt-6 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 w-full sm:w-auto">
+								Calculate Risk
+							</button>
+						</form>
 					</div>
 				</div>
 			</section>
 
 			{/* Risk Results */}
-			{riskScore !== null && (
-				<section className="py-12 px-4 bg-gray-50">
-					<div className="container mx-auto max-w-5xl text-center">
-						<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 animate-fade-in">
-							Your ASCVD Risk Profile
-						</h2>
-						<div
-							className="bg-white/10 p-6 sm:p-8 rounded-2xl shadow-md border border-red-100 backdrop-blur-sm animate-slide-up"
-							role="region"
-							aria-live="polite">
-							<div
-								className="radial-progress mx-auto mb-4"
-								style={
-									{ "--progress": `${riskScore}%` } as React.CSSProperties
-								}>
-								<span className="text-2xl font-bold text-gray-900">
-									{riskScore}%
-								</span>
-							</div>
-							<p className="text-xl font-semibold text-gray-900 mb-4">
-								Risk Level: {riskLevel}
-							</p>
-							<div className="text-left max-w-md mx-auto">
-								<h3 className="text-lg font-medium text-gray-900 mb-2">
-									AHA/ACC Recommendations:
-								</h3>
-								<ul className="list-disc pl-5 space-y-2 text-gray-600">
-									{recommendations.map((rec, index) => (
-										<li key={index}>{rec}</li>
-									))}
-								</ul>
-							</div>
-						</div>
-					</div>
-				</section>
-			)}
+			{/* Removed inline risk results section to replace with modal */}
 
 			{/* Footer */}
-			<footer className="bg-gray-900 text-white py-8 px-4">
-				<div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center">
-					<div className="flex items-center gap-2 mb-4 sm:mb-0">
-						<HeartPulseIcon className="w-6 h-6 text-red-600" />
-						<span className="text-sm font-medium">
-							CardiacAI © {new Date().getFullYear()}
-						</span>
-					</div>
-					<nav className="flex gap-4 text-sm text-gray-400">
-						<Link to="/privacy" className="hover:text-white transition-colors">
-							Privacy Policy
-						</Link>
-						<Link to="/terms" className="hover:text-white transition-colors">
-							Terms of Use
-						</Link>
-						<Link to="/contact" className="hover:text-white transition-colors">
-							Contact Us
-						</Link>
-					</nav>
-				</div>
-			</footer>
+			<Footer />
 
 			{/* Resource Modal */}
 			<ResourceModal
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
 			/>
+
+			{/* Risk Result Modal */}
+			{isModalOpen && (
+				<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in">
+					<div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl animate-slide-up">
+						<button
+							onClick={() => setIsModalOpen(false)}
+							className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+							aria-label="Close modal">
+							<XIcon className="w-6 h-6" />
+						</button>
+						<h3 className="text-2xl font-bold text-gray-900 mb-4">
+							Your ASCVD Risk Profile
+						</h3>
+						<div
+							className="radial-progress mx-auto mb-4"
+							style={{ "--progress": `${riskScore}%` } as React.CSSProperties}>
+							<span className="text-2xl font-bold text-gray-900">
+								{riskScore}%
+							</span>
+						</div>
+						<p className="text-xl font-semibold text-gray-900 mb-4">
+							Risk Level: {riskLevel}
+						</p>
+						<div className="text-left max-w-md mx-auto">
+							<h3 className="text-lg font-medium text-gray-900 mb-2">
+								AHA/ACC Recommendations:
+							</h3>
+							<ul className="list-disc pl-5 space-y-2 text-gray-600">
+								{recommendations.map((rec, index) => (
+									<li key={index}>{rec}</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
