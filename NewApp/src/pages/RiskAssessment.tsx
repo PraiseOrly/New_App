@@ -437,7 +437,7 @@ const RiskAssessment: React.FC = () => {
 					<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center animate-fade-in">
 						Calculate 10-Year ASCVD Risk
 					</h2>
-					<div className="bg-white/10 p-6 sm:p-8 rounded-2xl shadow-md border border-red-100 backdrop-blur-sm animate-slide-up">
+					<div className="bg-white/10 p-6 sm:p-8 rounded-2xl shadow-md border border-red-100 backdrop-blur-sm animate-slide-up max-w-md mx-auto">
 						<form onSubmit={calculateASCVD} className="grid grid-cols-1 gap-4">
 							<div>
 								<label htmlFor="age" className="block text-gray-700 mb-2">
