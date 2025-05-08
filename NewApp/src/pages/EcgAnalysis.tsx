@@ -400,9 +400,11 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Form submitted with:", { images, leadType, voltage, speed, reason, otherReason });
+		console.log("EcgForm handleSubmit called with:", { images, leadType, voltage, speed, reason, otherReason });
 		if (validateForm()) {
 			onProcess({ images, leadType, voltage, speed, reason, otherReason });
+		} else {
+			console.log("Form validation failed:", errors);
 		}
 	};
 
@@ -841,7 +843,7 @@ const EcgAnalysis: React.FC = () => {
 
 	const openCameraRef = React.useRef<{ openCamera: () => void }>(null);
 
-	const handleProcessEcg = (data: {
+	const handleProcessEcg = async (data: {
 		images: File[];
 		leadType: string;
 		voltage: string;
@@ -850,7 +852,41 @@ const EcgAnalysis: React.FC = () => {
 		otherReason: string;
 	}) => {
 		setIsProcessing(true);
-		setTimeout(() => {
+		try {
+			// Convert images to base64 strings
+			const toBase64 = (file: File) =>
+				new Promise<string>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = () => resolve(reader.result as string);
+					reader.onerror = (error) => reject(error);
+				});
+			const base64Images = await Promise.all(data.images.map(toBase64));
+
+			// Prepare form data for API call
+			const formData = {
+				images: base64Images,
+				leadType: data.leadType,
+				voltage: data.voltage,
+				speed: data.speed,
+				reason: data.reason,
+				otherReason: data.otherReason,
+			};
+
+			const response = await fetch("/api/ecg-analysis", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
+
+			if (!response.ok) {
+				throw new Error(`API error: ${response.statusText}`);
+			}
+
+			const result = await response.json();
+
 			setIsProcessing(false);
 			setModalState({ isOpen: true, data });
 			setHistory([
@@ -863,14 +899,10 @@ const EcgAnalysis: React.FC = () => {
 				},
 				...history,
 			]);
-			console.log("ECG Processing:", {
-				images: data.images.map((img) => img.name),
-				leadType: data.leadType,
-				voltage: data.voltage,
-				speed: data.speed,
-				reason: data.reason === "other" ? data.otherReason : data.reason,
-			});
-		}, 2000);
+		} catch (error) {
+			setIsProcessing(false);
+			console.error("Error processing ECG:", error);
+		}
 	};
 
 	return (
