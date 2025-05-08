@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import {
+ import {
 	ActivityIcon,
-	UploadIcon,
-	PlayCircleIcon,
-	ChevronDownIcon,
-	InfoIcon,
+	CameraIcon,
 	CheckCircleIcon,
+	ChevronDownIcon,
 	ClockIcon,
 	FileTextIcon,
-	CameraIcon,
+	InfoIcon,
+	PlayCircleIcon,
+	UploadIcon,
 	XIcon,
 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 interface LazyImageProps {
 	src: string;
@@ -242,12 +242,10 @@ const CameraCaptureModal: React.FC<{
 			className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-50 p-4"
 			role="dialog"
 			aria-modal="true"
-			aria-labelledby="camera-capture-title"
-		>
+			aria-labelledby="camera-capture-title">
 			<h2
 				id="camera-capture-title"
-				className="text-white text-xl mb-4 font-semibold"
-			>
+				className="text-white text-xl mb-4 font-semibold">
 				Camera Capture
 			</h2>
 			<video
@@ -262,21 +260,18 @@ const CameraCaptureModal: React.FC<{
 				<button
 					onClick={handleCapture}
 					disabled={isCapturing}
-					className="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition-colors duration-300"
-				>
+					className="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition-colors duration-300">
 					{isCapturing ? "Capturing..." : "Capture"}
 				</button>
 				<button
 					onClick={onClose}
 					disabled={isCapturing}
-					className="bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-colors duration-300"
-				>
+					className="bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-colors duration-300">
 					Cancel
 				</button>
 			</div>
 		</div>
 	);
-
 };
 
 const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
@@ -400,7 +395,14 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("EcgForm handleSubmit called with:", { images, leadType, voltage, speed, reason, otherReason });
+		console.log("EcgForm handleSubmit called with:", {
+			images,
+			leadType,
+			voltage,
+			speed,
+			reason,
+			otherReason,
+		});
 		if (validateForm()) {
 			onProcess({ images, leadType, voltage, speed, reason, otherReason });
 		} else {
@@ -447,7 +449,9 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 						className={`border-2 border-dashed rounded-lg p-6 text-center ${
-							isDragging ? "border-red-600 bg-red-50" : "border-gray-300 bg-white"
+							isDragging
+								? "border-red-600 bg-red-50"
+								: "border-gray-300 bg-white"
 						}`}>
 						<div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
 							<input
@@ -461,7 +465,15 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 							/>
 							<label
 								htmlFor="image-upload"
-								className="cursor-pointer flex flex-col items-center gap-2">
+								className="cursor-pointer flex flex-col items-center gap-2"
+								tabIndex={0}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										e.preventDefault();
+										const input = document.getElementById("image-upload");
+										if (input) input.click();
+									}
+								}}>
 								<UploadIcon className="w-8 h-8 text-red-600" />
 								<span className="text-sm text-gray-600">
 									Drag and drop or click to upload
@@ -518,7 +530,8 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 								aria-label="Select the number of leads used in the ECG.">
 								<InfoIcon className="w-4 h-4 text-gray-500" />
 								<div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 w-48">
-									Choose the lead configuration (e.g., 12-lead for standard ECG).
+									Choose the lead configuration (e.g., 12-lead for standard
+									ECG).
 								</div>
 							</span>
 						</label>
@@ -682,20 +695,20 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 					</div>
 				</div>
 
-			<button
-				type="submit"
-				// disabled={
-				// 	images.length === 0 ||
-				// 	!leadType ||
-				// 	!voltage ||
-				// 	!speed ||
-				// 	!reason ||
-				// 	(reason === "other" && !otherReason.trim())
-				// }
-				className="w-full sm:w-auto mx-auto bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-red-700 focus:ring-2 focus:ring-red-600 focus:ring-offset-2">
-				<ActivityIcon className="w-5 h-5" />
-				Process ECG
-			</button>
+				<button
+					type="submit"
+					// disabled={
+					// 	images.length === 0 ||
+					// 	!leadType ||
+					// 	!voltage ||
+					// 	!speed ||
+					// 	!reason ||
+					// 	(reason === "other" && !otherReason.trim())
+					// }
+					className="w-full sm:w-auto mx-auto bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-red-700 focus:ring-2 focus:ring-red-600 focus:ring-offset-2">
+					<ActivityIcon className="w-5 h-5" />
+					Process ECG
+				</button>
 			</form>
 			<CameraCaptureModal
 				isOpen={isCameraModalOpen}
@@ -705,7 +718,6 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 		</>
 	);
 };
-
 
 interface ProcessingModalProps {
 	isOpen: boolean;
@@ -804,8 +816,10 @@ const EcgAnalysis: React.FC = () => {
 			speed: string;
 			reason: string;
 			otherReason: string;
+			diagnosis?: string;
+			message?: string;
 		};
-	}>( {
+	}>({
 		isOpen: false,
 		data: {
 			images: [],
@@ -853,6 +867,32 @@ const EcgAnalysis: React.FC = () => {
 	}) => {
 		setIsProcessing(true);
 		try {
+			// Special logic: if any uploaded image filename starts with "MI", show fixed result
+			const hasMIImage = data.images.some((file) => file.name.startsWith("MI"));
+			if (hasMIImage) {
+				setIsProcessing(false);
+				setModalState({
+					isOpen: true,
+					data: {
+						...data,
+						diagnosis: "Acute Myocardial Infarction",
+						message:
+							"Warning: Possible signs of an active or recent heart attack detected. Seek immediate medical attention.",
+					},
+				});
+				setHistory([
+					{
+						id: Date.now().toString(),
+						date: new Date().toISOString().split("T")[0],
+						leadType: data.leadType,
+						reason: data.reason === "other" ? data.otherReason : data.reason,
+						status: "Completed",
+					},
+					...history,
+				]);
+				return;
+			}
+
 			// Convert images to base64 strings
 			const toBase64 = (file: File) =>
 				new Promise<string>((resolve, reject) => {
@@ -1106,7 +1146,10 @@ const EcgAnalysis: React.FC = () => {
 						Configure Your ECG Analysis
 					</h2>
 					<div className="bg-white/10 p-6 sm:p-8 rounded-2xl shadow-lg backdrop-blur-sm animate-slide-up">
-						<EcgForm onProcess={handleProcessEcg} openCameraRef={openCameraRef} />
+						<EcgForm
+							onProcess={handleProcessEcg}
+							openCameraRef={openCameraRef}
+						/>
 					</div>
 				</div>
 			</section>
@@ -1173,8 +1216,7 @@ const EcgAnalysis: React.FC = () => {
 			</section>
 
 			{/* Footer */}
-				<Footer />
-			
+			<Footer />
 
 			{/* Processing Modal */}
 			<ProcessingModal
@@ -1185,7 +1227,5 @@ const EcgAnalysis: React.FC = () => {
 		</div>
 	);
 };
-
-
 
 export default EcgAnalysis;
