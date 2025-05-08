@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import FeatureCard from "../components/FeatureCard";
 import Footer from "../components/Footer";
+import RequestDemoModal from "../components/RequestDemoModal";
 import {
 	HeartPulseIcon,
 	StethoscopeIcon,
@@ -205,6 +206,8 @@ const Homepage: React.FC = () => {
 		content: "",
 		link: "",
 	});
+
+	const [requestDemoOpen, setRequestDemoOpen] = useState(false);
 
 	const openModal = (title: string, content: string, link?: string) => {
 		setModalState({ isOpen: true, title, content, link });
@@ -609,12 +612,12 @@ const Homepage: React.FC = () => {
 							Discover how our AI-powered solutions can elevate your practice.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
-<Link
-	to="/demo#demo-form"
-	className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
-	<PlayCircleIcon className="w-5 h-5" />
-	Request Demo
-</Link>
+						<button
+							onClick={() => setRequestDemoOpen(true)}
+							className="bg-white text-red-600 hover:bg-gray-100 font-medium py-2.5 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
+							<PlayCircleIcon className="w-5 h-5" />
+							Request Demo
+						</button>
 							<Link
 								to="/contact"
 								className="border-2 border-white hover:bg-white/20 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
@@ -635,6 +638,11 @@ const Homepage: React.FC = () => {
 				title={modalState.title}
 				content={modalState.content}
 				link={modalState.link}
+			/>
+
+			<RequestDemoModal
+				isOpen={requestDemoOpen}
+				onClose={() => setRequestDemoOpen(false)}
 			/>
 		</div>
 	);
