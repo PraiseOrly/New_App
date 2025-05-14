@@ -94,6 +94,192 @@ const getStatusColor = (status: string) => {
 	}
 };
 
+// Mock time-series data for ECG parameters
+const mockTimeSeriesData = [
+	{ date: "2023-12-10", HR: 70, QT: 380, PR: 160, QRS: 90 },
+	{ date: "2023-12-11", HR: 72, QT: 385, PR: 162, QRS: 92 },
+	{ date: "2023-12-12", HR: 68, QT: 375, PR: 158, QRS: 88 },
+	{ date: "2023-12-13", HR: 75, QT: 390, PR: 165, QRS: 95 },
+	{ date: "2023-12-14", HR: 73, QT: 382, PR: 161, QRS: 91 },
+	{ date: "2023-12-15", HR: 70, QT: 378, PR: 159, QRS: 89 },
+];
+
+// Simple SVG chart component for line and scatter plots
+interface ChartProps {
+	data: typeof mockTimeSeriesData;
+	viewType: "line" | "scatter";
+	width: number;
+	height: number;
+}
+
+const Chart: React.FC<ChartProps> = ({ data, viewType, width, height }) => {
+	const padding = 40;
+	const chartWidth = width - padding * 2;
+	const chartHeight = height - padding * 2;
+
+	// Extract dates and values for each parameter
+	const dates = data.map((d) => d.date);
+	const HRValues = data.map((d) => d.HR);
+	const QTValues = data.map((d) => d.QT);
+	const PRValues = data.map((d) => d.PR);
+	const QRSValues = data.map((d) => d.QRS);
+
+	// X scale: map dates to x coordinates
+	const xScale = (index: number) =>
+		padding + (index / (data.length - 1)) * chartWidth;
+
+	// Y scale: map values to y coordinates (inverted y-axis)
+	const yScale = (value: number, min: number, max: number) =>
+		padding + chartHeight - ((value - min) / (max - min)) * chartHeight;
+
+	// Get min and max for each parameter
+	const minHR = Math.min(...HRValues);
+	const maxHR = Math.max(...HRValues);
+	const minQT = Math.min(...QTValues);
+	const maxQT = Math.max(...QTValues);
+	const minPR = Math.min(...PRValues);
+	const maxPR = Math.max(...PRValues);
+	const minQRS = Math.min(...QRSValues);
+	const maxQRS = Math.max(...QRSValues);
+
+	// Generate path for line chart
+	const generatePath = (values: number[], min: number, max: number) => {
+		return values
+			.map((val, i) => `${i === 0 ? "M" : "L"}${xScale(i)} ${yScale(val, min, max)}`)
+			.join(" ");
+	};
+
+	// Colors for each parameter
+	const colors = {
+		HR: "red",
+		QT: "blue",
+		PR: "green",
+		QRS: "orange",
+	};
+
+	return (
+		<svg
+			width={width}
+			height={height}
+			role="img"
+			aria-label="ECG Trend Graphs"
+			style={{ border: "2px solid red" }}
+		>
+			{/* Axes */}
+			<line
+				x1={padding}
+				y1={padding + chartHeight}
+				x2={padding + chartWidth}
+				y2={padding + chartHeight}
+				stroke="black"
+			/>
+			<line x1={padding} y1={padding} x2={padding} y2={padding + chartHeight} stroke="black" />
+
+			{/* Labels for dates */}
+			{dates.map((date, i) => (
+				<text
+					key={date}
+					x={xScale(i)}
+					y={padding + chartHeight + 15}
+					fontSize={10}
+					textAnchor="middle"
+				>
+					{date.slice(5)}
+				</text>
+			))}
+
+			{/* Lines or scatter points for each parameter */}
+			{viewType === "line" ? (
+				<>
+					<path
+						d={generatePath(HRValues, minHR, maxHR)}
+						fill="none"
+						stroke={colors.HR}
+						strokeWidth={2}
+					/>
+					<path
+						d={generatePath(QTValues, minQT, maxQT)}
+						fill="none"
+						stroke={colors.QT}
+						strokeWidth={2}
+					/>
+					<path
+						d={generatePath(PRValues, minPR, maxPR)}
+						fill="none"
+						stroke={colors.PR}
+						strokeWidth={2}
+					/>
+					<path
+						d={generatePath(QRSValues, minQRS, maxQRS)}
+						fill="none"
+						stroke={colors.QRS}
+						strokeWidth={2}
+					/>
+				</>
+			) : (
+				<>
+					{HRValues.map((val, i) => (
+						<circle
+							key={`HR-${i}`}
+							cx={xScale(i)}
+							cy={yScale(val, minHR, maxHR)}
+							r={4}
+							fill={colors.HR}
+						/>
+					))}
+					{QTValues.map((val, i) => (
+						<circle
+							key={`QT-${i}`}
+							cx={xScale(i)}
+							cy={yScale(val, minQT, maxQT)}
+							r={4}
+							fill={colors.QT}
+						/>
+					))}
+					{PRValues.map((val, i) => (
+						<circle
+							key={`PR-${i}`}
+							cx={xScale(i)}
+							cy={yScale(val, minPR, maxPR)}
+							r={4}
+							fill={colors.PR}
+						/>
+					))}
+					{QRSValues.map((val, i) => (
+						<circle
+							key={`QRS-${i}`}
+							cx={xScale(i)}
+							cy={yScale(val, minQRS, maxQRS)}
+							r={4}
+							fill={colors.QRS}
+						/>
+					))}
+				</>
+			)}
+
+			{/* Legend */}
+			<rect x={width - 120} y={padding} width={110} height={70} fill="white" stroke="black" />
+			<circle cx={width - 110} cy={padding + 15} r={6} fill={colors.HR} />
+			<text x={width - 95} y={padding + 20} fontSize={12}>
+				HR
+			</text>
+			<circle cx={width - 110} cy={padding + 35} r={6} fill={colors.QT} />
+			<text x={width - 95} y={padding + 40} fontSize={12}>
+				QT
+			</text>
+			<circle cx={width - 110} cy={padding + 55} r={6} fill={colors.PR} />
+			<text x={width - 95} y={padding + 60} fontSize={12}>
+				PR
+			</text>
+			<circle cx={width - 110} cy={padding + 75} r={6} fill={colors.QRS} />
+			<text x={width - 95} y={padding + 80} fontSize={12}>
+				QRS
+			</text>
+		</svg>
+	);
+
+};
+
 const ECGTimelineView: React.FC = () => {
 	const [filters, setFilters] = useState<{
 		dateFrom: string;
@@ -110,6 +296,8 @@ const ECGTimelineView: React.FC = () => {
 		reviewed: "all",
 		downloadable: "all",
 	});
+
+	const [viewType, setViewType] = useState<"line" | "scatter">("line");
 
 	const handleFilterChange = (field: keyof typeof filters, value: string) => {
 		setFilters((prev) => ({ ...prev, [field]: value }));
@@ -251,6 +439,33 @@ const ECGTimelineView: React.FC = () => {
 	return (
 		<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 max-w-4xl mx-auto">
 			<h2 className="text-lg font-semibold text-gray-900 mb-4">ECG Timeline View</h2>
+			<div className="mb-4 flex items-center justify-between">
+				<div className="flex space-x-4">
+					<button
+						onClick={() => setViewType("line")}
+						className={`px-4 py-2 rounded-md font-semibold ${
+							viewType === "line"
+								? "bg-blue-600 text-white"
+								: "bg-gray-200 text-gray-700"
+						}`}
+					>
+						Line View
+					</button>
+					<button
+						onClick={() => setViewType("scatter")}
+						className={`px-4 py-2 rounded-md font-semibold ${
+							viewType === "scatter"
+								? "bg-blue-600 text-white"
+								: "bg-gray-200 text-gray-700"
+						}`}
+					>
+						Scatter View
+					</button>
+				</div>
+			</div>
+			<div className="mb-6">
+				<Chart data={mockTimeSeriesData} viewType={viewType} width={700} height={250} />
+			</div>
 			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
 				{renderFilter("Date From", "dateFrom", [
 					{ value: "", label: "All" },
@@ -295,4 +510,3 @@ const ECGTimelineView: React.FC = () => {
 	);
 };
 
-export default ECGTimelineView;

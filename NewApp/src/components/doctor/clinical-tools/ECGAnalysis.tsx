@@ -17,7 +17,10 @@ import {
 	ZoomInIcon,
 	ZoomOutIcon,
 } from "lucide-react";
+
 import React, { useEffect, useRef, useState } from "react";
+import ECGTimelineView from "./ECGTimelineView";
+
 
 // Interfaces
 interface Patient {
@@ -968,7 +971,7 @@ const renderUploadSection = (
 const renderAnalysisTools = () => (
 	<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
 		<div className="mb-4">
-			<h3 className="text-lg font-semibold text-gray-900">Analysis Tools</h3>
+			<h3 className="text-lg font-semibold text-gray-900">Monitoring Tools</h3>
 		</div>
 		<div className="space-y-4 text-gray-700 text-sm">
 			<button
@@ -1570,13 +1573,19 @@ const ECGAnalysis: React.FC = () => {
 						<div className="grid grid-cols-2 grid-rows-2 gap-6">
 							<div className="col-span-2">{renderPatientInfo(selectedPatient, ecgRecords)}</div>
 						</div>
-						<div className="grid grid-cols-2 gap-6">
-							<div>{renderAnalysisTools()}</div>
-							<div>{renderUploadSection(setShowUploadModal)}</div>
-							<div className="col-span-2">
-								{renderECGRecords(filteredECGs, expandedRecords, toggleRecordExpansion)}
-							</div>
-						</div>
+					<div className="grid grid-cols-2 gap-6">
+						<div>{renderAnalysisTools()}</div>
+					</div>
+					<div className="mt-6">
+						<ECGTimelineView />
+					</div>
+					<div className="mt-6">
+						{renderUploadSection(setShowUploadModal)}
+					</div>
+					{/* Hide the existing detailed ECG records list when showing ECGTimelineView */}
+					{/* <div className="col-span-2">
+						{renderECGRecords(filteredECGs, expandedRecords, toggleRecordExpansion)}
+					</div> */}
 					</div>
 				</div>
 			)}
