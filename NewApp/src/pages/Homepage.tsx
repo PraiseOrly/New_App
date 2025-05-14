@@ -401,7 +401,7 @@ const Homepage: React.FC = () => {
 										size={36}
 									/>
 								),
-								value: "Pre-Certification",
+								value: "Certification",
 								text: "Built with regulatory standards in mind",
 								modal: {
 									title: "Certifications",
