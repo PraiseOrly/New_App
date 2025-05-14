@@ -1,26 +1,34 @@
 import {
 	ActivityIcon,
 	AlertCircleIcon,
-	BrainIcon,
 	CalendarIcon,
 	CameraIcon,
 	CheckCircleIcon,
 	ChevronDownIcon,
 	ChevronRightIcon,
 	FileIcon,
-	FilterIcon,
 	HeartPulseIcon,
 	InfoIcon,
-	LineChartIcon,
 	RotateCcwIcon,
 	SearchIcon,
-	TimerIcon,
 	UploadIcon,
 	XIcon,
 	ZoomInIcon,
 	ZoomOutIcon,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+
+interface Patient {
+	id: string;
+	name: string;
+	dateOfBirth: string;
+	medicalHistory?: string[];
+	vitals?: {
+		bloodPressure: string;
+		temperature: string;
+		oxygenSaturation: string;
+	};
+}
 
 interface ECGType {
 	id: string;
@@ -30,32 +38,9 @@ interface ECGType {
 	icon: React.ElementType;
 }
 
-const ecgTypes: ECGType[] = [
-	{
-		id: "resting",
-		type: "resting",
-		name: "Resting ECG",
-		description: "Standard 12-lead ECG recording",
-		icon: HeartPulseIcon,
-	},
-	{
-		id: "holter",
-		type: "holter",
-		name: "Holter Monitor",
-		description: "24-48 hour continuous recording",
-		icon: ActivityIcon,
-	},
-	{
-		id: "stress",
-		type: "stress",
-		name: "Stress ECG",
-		description: "Exercise stress test recording",
-		icon: TimerIcon,
-	},
-];
-
 interface ECGRecord {
 	id: string;
+	patientId: string;
 	patientName: string;
 	date: string;
 	status: "normal" | "abnormal" | "critical" | "pending";
@@ -67,12 +52,50 @@ interface ECGRecord {
 	findings: string[];
 	recommendations: string[];
 	priority: "routine" | "urgent" | "stat";
+	technicianNotes?: string;
 }
+
+const mockPatients: Patient[] = [
+	{
+		id: "1",
+		name: "Amara Nwosu",
+		dateOfBirth: "1975-06-15",
+		medicalHistory: ["Hypertension", "Type 2 Diabetes"],
+		vitals: {
+			bloodPressure: "130/85 mmHg",
+			temperature: "36.8°C",
+			oxygenSaturation: "98%",
+		},
+	},
+	{
+		id: "2",
+		name: "Sofia Alvarez",
+		dateOfBirth: "1982-09-22",
+		medicalHistory: ["Asthma", "Hyperlipidemia"],
+		vitals: {
+			bloodPressure: "125/80 mmHg",
+			temperature: "37.0°C",
+			oxygenSaturation: "97%",
+		},
+	},
+	{
+		id: "3",
+		name: "Hiroshi Tanaka",
+		dateOfBirth: "1968-03-10",
+		medicalHistory: ["Coronary Artery Disease", "Previous MI"],
+		vitals: {
+			bloodPressure: "140/90 mmHg",
+			temperature: "36.6°C",
+			oxygenSaturation: "96%",
+		},
+	},
+];
 
 const mockECGs: ECGRecord[] = [
 	{
 		id: "1",
-		patientName: "John Doe",
+		patientId: "1",
+		patientName: "Amara Nwosu",
 		date: "2023-12-15",
 		status: "normal",
 		heartRate: 72,
@@ -91,10 +114,12 @@ const mockECGs: ECGRecord[] = [
 			"No immediate intervention required",
 		],
 		priority: "routine",
+		technicianNotes: "Clear waveform, no artifacts observed.",
 	},
 	{
 		id: "2",
-		patientName: "Jane Smith",
+		patientId: "2",
+		patientName: "Sofia Alvarez",
 		date: "2023-12-14",
 		status: "abnormal",
 		heartRate: 88,
@@ -113,10 +138,12 @@ const mockECGs: ECGRecord[] = [
 			"Weekly monitoring",
 		],
 		priority: "urgent",
+		technicianNotes: "Patient reported palpitations during recording.",
 	},
 	{
 		id: "3",
-		patientName: "Robert Brown",
+		patientId: "3",
+		patientName: "Hiroshi Tanaka",
 		date: "2023-12-13",
 		status: "critical",
 		heartRate: 115,
@@ -135,6 +162,7 @@ const mockECGs: ECGRecord[] = [
 			"Continuous monitoring",
 		],
 		priority: "stat",
+		technicianNotes: "Patient experienced chest pain during test.",
 	},
 ];
 
@@ -293,7 +321,7 @@ const CameraCaptureModal: React.FC<{
 				<button
 					onClick={handleCapture}
 					disabled={isCapturing}
-					className="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition-colors duration-300">
+					className="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300">
 					{isCapturing ? "Capturing..." : "Capture"}
 				</button>
 				<button
@@ -460,8 +488,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 							type="button"
 							onClick={handleCaptureImageClick}
 							data-testid="capture-image-button"
-							className="bg-red-50 text-red-600 font-medium py-2 px-6 rounded-lg hover:bg-red-100 transition-colors duration-300 flex items-center gap-2"
-							aria-label="Capture ECG image with camera">
+							className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center gap-2">
 							<CameraIcon className="w-5 h-5" />
 							Capture Image
 						</button>
@@ -473,7 +500,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 						onDragLeave={handleDragLeave}
 						className={`border-2 border-dashed rounded-lg p-6 text-center ${
 							isDragging
-								? "border-red-600 bg-red-50"
+								? "border-blue-600 bg-blue-50"
 								: "border-gray-300 bg-white"
 						}`}>
 						<div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
@@ -497,7 +524,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 										if (input) input.click();
 									}
 								}}>
-								<UploadIcon className="w-8 h-8 text-red-600" />
+								<UploadIcon className="w-8 h-8 text-blue-600" />
 								<span className="text-sm text-gray-600">
 									Drag and drop or click to upload
 								</span>
@@ -526,8 +553,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 										/>
 										<button
 											onClick={() => removeImage(index)}
-											className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center -mt-2 -mr-2"
-											aria-label={`Remove image ${index + 1}`}>
+											className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center -mt-2 -mr-2">
 											×
 										</button>
 									</div>
@@ -563,7 +589,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 								id="lead-type"
 								value={leadType}
 								onChange={(e) => setLeadType(e.target.value)}
-								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
 								aria-describedby="lead-type-error">
 								<option value="">Select Lead Type</option>
 								<option value="12-lead">12-Lead</option>
@@ -600,7 +626,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 								id="voltage"
 								value={voltage}
 								onChange={(e) => setVoltage(e.target.value)}
-								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
 								aria-describedby="voltage-error">
 								<option value="">Select Voltage</option>
 								<option value="2.5 mm/mV">2.5 mm/mV</option>
@@ -638,7 +664,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 								id="speed"
 								value={speed}
 								onChange={(e) => setSpeed(e.target.value)}
-								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
 								aria-describedby="speed-error">
 								<option value="">Select Speed</option>
 								<option value="12.5 mm/s">12.5 mm/s</option>
@@ -675,7 +701,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 								id="reason"
 								value={reason}
 								onChange={(e) => setReason(e.target.value)}
-								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+								className="appearance-none w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
 								aria-describedby="reason-error">
 								<option value="">Select Reason</option>
 								<option value="chest pain">Chest Pain</option>
@@ -685,7 +711,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 								<option value="syncope">Syncope</option>
 								<option value="fatigue">Fatigue</option>
 								<option value="routine checkup">Routine Checkup</option>
-								<option value="post-procedure">Post-Procedure</option>
+								<option value="postprocedure">Post-Procedure</option>
 								<option value="other">Other</option>
 							</select>
 							<ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
@@ -703,7 +729,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 									value={otherReason}
 									onChange={(e) => setOtherReason(e.target.value)}
 									placeholder="Specify reason"
-									className="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-red-600 focus:border-red-600"
+									className="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
 									aria-describedby="other-reason-error"
 								/>
 								{errors.otherReason && (
@@ -720,7 +746,7 @@ const EcgForm: React.FC<EcgFormProps> = ({ onProcess, openCameraRef }) => {
 
 				<button
 					type="submit"
-					className="w-full sm:w-auto mx-auto bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 hover:bg-red-700 focus:ring-2 focus:ring-red-600 focus:ring-offset-2">
+					className="w-full sm:w-auto mx-auto bg-blue-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 hover:bg-blue-700 focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
 					<ActivityIcon className="w-5 h-5" />
 					Process ECG
 				</button>
@@ -771,21 +797,20 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 
 	const handleReviewClick = () => {
 		setIsReviewed(true);
-		// Additional logic for review action can be added here (e.g., API call)
 	};
 
 	if (!isOpen) return null;
 
 	return (
 		<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in">
-			<div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl animate-slide-up">
+			<div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl animate-scale-in">
 				<button
 					onClick={onClose}
-					className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+					className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600"
 					aria-label="Close modal">
 					<XIcon className="w-6 h-6" />
 				</button>
-				<h3 className="text-2xl font-bold text-gray-900 mb-4">
+				<h3 className="text-2xl font-semibold text-gray-900 mb-4">
 					ECG Analysis Report
 				</h3>
 				<p className="text-gray-600 mb-2">
@@ -801,7 +826,7 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 					</li>
 				</ul>
 				{data.diagnosis && (
-					<div className="bg-red-100 border border-red-400 text-red-700 p-4 rounded mb-4">
+					<div className="bg-blue-100 border border-blue-400 text-blue-700 p-4 rounded mb-4">
 						<h4 className="font-semibold mb-2">{data.diagnosis}</h4>
 						<p>{data.message}</p>
 					</div>
@@ -817,7 +842,7 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 					className={`w-full py-2 px-4 rounded-lg font-semibold transition-colors duration-300 ${
 						isReviewed
 							? "bg-gray-400 text-gray-700 cursor-not-allowed"
-							: "bg-red-600 text-white hover:bg-red-700"
+							: "bg-blue-600 text-white hover:bg-blue-700"
 					}`}>
 					{isReviewed ? "Reviewed" : "Review"}
 				</button>
@@ -826,308 +851,59 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 	);
 };
 
-const ECGAnalysis = () => {
-	const [selectedECGType, setSelectedECGType] = useState<string>("resting");
-	const [showUploadModal, setShowUploadModal] = useState(false);
-	const [isComparing, setIsComparing] = useState(false);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [selectedStatus, setSelectedStatus] = useState<string>("all");
-	const [expandedRecords, setExpandedRecords] = useState<string[]>([]);
-	const [ecgRecords, setEcgRecords] = useState<ECGRecord[]>(mockECGs);
-	const [isProcessing, setIsProcessing] = useState(false);
-	const [modalState, setModalState] = useState<{
-		isOpen: boolean;
-		data: {
-			images: File[];
-			leadType: string;
-			voltage: string;
-			speed: string;
-			reason: string;
-			otherReason: string;
-			diagnosis?: string;
-			message?: string;
-			accuracyRating?: string;
-			reviewed?: boolean;
-		};
-	}>({
-		isOpen: false,
-		data: {
-			images: [],
-			leadType: "",
-			voltage: "",
-			speed: "",
-			reason: "",
-			otherReason: "",
-			reviewed: false,
-		},
-	});
-	const openCameraRef = useRef<{ openCamera: () => void }>(null);
-
-	const toggleRecordExpansion = (recordId: string) => {
-		setExpandedRecords((current) =>
-			current.includes(recordId)
-				? current.filter((id) => id !== recordId)
-				: [...current, recordId]
-		);
-	};
-
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "normal":
-				return "bg-green-100 text-green-800";
-			case "abnormal":
-				return "bg-yellow-100 text-yellow-800";
-			case "critical":
-				return "bg-red-100 text-red-800";
-			case "pending":
-				return "bg-gray-100 text-gray-800";
-			default:
-				return "bg-gray-100 text-gray-800";
-		}
-	};
-
-	const getPriorityIcon = (priority: string) => {
-		switch (priority) {
-			case "stat":
-				return (
-					<AlertCircleIcon className="h-5 w-5 text-red-500" aria-label="STAT" />
-				);
-			case "urgent":
-				return (
-					<AlertCircleIcon
-						className="h-5 w-5 text-yellow-500"
-						aria-label="Urgent"
-					/>
-				);
-			case "routine":
-				return (
-					<CheckCircleIcon
-						className="h-5 w-5 text-green-500"
-						aria-label="Routine"
-					/>
-				);
-			default:
-				return null;
-		}
-	};
-
-	const handleProcessEcg = async (data: {
-		images: File[];
-		leadType: string;
-		voltage: string;
-		speed: string;
-		reason: string;
-		otherReason: string;
-	}) => {
-		setIsProcessing(true);
-		try {
-			// Special logic: if any uploaded image filename starts with "MI", show fixed result
-			const hasMIImage = data.images.some((file) => file.name.startsWith("MI"));
-			if (hasMIImage) {
-				setIsProcessing(false);
-				setModalState({
-					isOpen: true,
-					data: {
-						...data,
-						diagnosis: "Acute Myocardial Infarction Detected",
-						message:
-							"Warning: Possible signs of an active or recent heart attack detected. Seek immediate medical attention.",
-						accuracyRating: "98.7%",
-						reviewed: false,
-					},
-				});
-				setEcgRecords([
-					{
-						id: Date.now().toString(),
-						patientName: "Unknown",
-						date: new Date().toISOString().split("T")[0],
-						status: "pending",
-						heartRate: 0,
-						rhythm: "Acute Myocardial Infarction Detected",
-						prInterval: 0,
-						qrsInterval: 0,
-						qtInterval: 0,
-						findings: [
-							data.reason === "other" ? data.otherReason : data.reason,
-						],
-						recommendations: ["Seek immediate medical attention"],
-						priority: "stat",
-					},
-					...ecgRecords,
-				]);
-				return;
-			}
-
-			// Special logic: if any uploaded image filename starts with "HB", show fixed result
-			const hasHBImage = data.images.some((file) => file.name.startsWith("HB"));
-			if (hasHBImage) {
-				setIsProcessing(false);
-				setModalState({
-					isOpen: true,
-					data: {
-						...data,
-						diagnosis: "Abnormal Heartbeat Detected",
-						message:
-							"Irregular heartbeat detected. Further evaluation may be necessary to determine the cause.",
-						accuracyRating: "95.3%",
-						reviewed: false,
-					},
-				});
-				setEcgRecords([
-					{
-						id: Date.now().toString(),
-						patientName: "Unknown",
-						date: new Date().toISOString().split("T")[0],
-						status: "pending",
-						heartRate: 0,
-						rhythm: "Abnormal Heartbeat Detected",
-						prInterval: 0,
-						qrsInterval: 0,
-						qtInterval: 0,
-						findings: [
-							data.reason === "other" ? data.otherReason : data.reason,
-						],
-						recommendations: ["Further evaluation recommended"],
-						priority: "urgent",
-					},
-					...ecgRecords,
-				]);
-				return;
-			}
-
-			// Convert images to base64 strings
-			const toBase64 = (file: File) =>
-				new Promise<string>((resolve, reject) => {
-					const reader = new FileReader();
-					reader.readAsDataURL(file);
-					reader.onload = () => resolve(reader.result as string);
-					reader.onerror = (error) => reject(error);
-				});
-			const base64Images = await Promise.all(data.images.map(toBase64));
-
-			// Prepare form data for API call
-			const formData = {
-				images: base64Images,
-				leadType: data.leadType,
-				voltage: data.voltage,
-				speed: data.speed,
-				reason: data.reason,
-				otherReason: data.otherReason,
-			};
-
-			const response = await fetch("/api/ecg-analysis", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(formData),
-			});
-
-			if (!response.ok) {
-				throw new Error(`API error: ${response.statusText}`);
-			}
-
-			const result = await response.json();
-
-			setIsProcessing(false);
-			setModalState({
-				isOpen: true,
-				data: {
-					...data,
-					accuracyRating: result.accuracyRating ?? "N/A",
-					reviewed: false,
-				},
-			});
-			setEcgRecords([
-				{
-					id: Date.now().toString(),
-					patientName: "Unknown",
-					date: new Date().toISOString().split("T")[0],
-					status: "pending",
-					heartRate: 0,
-					rhythm: "Pending Analysis",
-					prInterval: 0,
-					qrsInterval: 0,
-					qtInterval: 0,
-					findings: [data.reason === "other" ? data.otherReason : data.reason],
-					recommendations: ["Awaiting results"],
-					priority: "routine",
-				},
-				...ecgRecords,
-			]);
-		} catch (error) {
-			setIsProcessing(false);
-			console.error("Error processing ECG:", error);
-		}
-	};
-
-	const renderECGTypeSelector = () => (
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-			{ecgTypes.map((type) => (
-				<button
-					key={type.id}
-					onClick={() => setSelectedECGType(type.id)}
-					className={`p-4 rounded-lg border ${
-						selectedECGType === type.id
-							? "border-red-500 bg-red-50"
-							: "border-gray-200 hover:border-red-500"
-					}`}>
-					<div className="flex items-center">
-						<type.icon
-							className={`h-6 w-6 ${
-								selectedECGType === type.id ? "text-red-500" : "text-gray-400"
-							}`}
-						/>
-						<div className="ml-3 text-left">
-							<h3 className="text-sm font-medium text-gray-900">{type.name}</h3>
-							<p className="text-xs text-gray-500">{type.description}</p>
-						</div>
-					</div>
-				</button>
-			))}
-		</div>
-	);
 
 	const renderUploadSection = () => (
-		<div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+		<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
 			<div className="flex items-center justify-between mb-4">
-				<h3 className="text-lg font-medium text-gray-900">Upload ECG</h3>
+				<h3 className="text-lg font-semibold text-gray-900">Upload ECG</h3>
 				<button
 					onClick={() => setShowUploadModal(true)}
-					className="flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+					className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300">
 					<UploadIcon className="h-5 w-5 mr-2" />
 					Upload New ECG
 				</button>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<div className="border rounded-lg p-4">
-					<h4 className="text-sm font-medium text-gray-900 mb-2">
+				<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+					<h4 className="text-sm font-semibold text-gray-900 mb-2">
 						Supported Formats
 					</h4>
 					<ul className="space-y-2 text-sm text-gray-600">
 						<li className="flex items-center">
-							<FileIcon className="h-4 w-4 mr-2" />
+							<FileIcon className="h-4 w-4 mr-2 text-blue-500" />
 							PDF (12-lead ECG reports)
 						</li>
 						<li className="flex items-center">
-							<FileIcon className="h-4 w-4 mr-2" />
+							<FileIcon className="h-4 w-4 mr-2 text-blue-500" />
 							DICOM (Standard medical format)
 						</li>
 						<li className="flex items-center">
-							<FileIcon className="h-4 w-4 mr-2" />
+							<FileIcon className="h-4 w-4 mr-2 text-blue-500" />
 							CSV (Raw data format)
 						</li>
 					</ul>
 				</div>
-				<div className="border rounded-lg p-4">
-					<h4 className="text-sm font-medium text-gray-900 mb-2">
+				<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+					<h4 className="text-sm font-semibold text-gray-900 mb-2">
 						Upload Guidelines
 					</h4>
 					<ul className="space-y-2 text-sm text-gray-600">
-						<li>• Ensure correct patient identification</li>
-						<li>• Verify lead placement accuracy</li>
-						<li>• Include relevant clinical context</li>
-						<li>• Check file quality before upload</li>
+						<li className="flex items-center">
+							<CheckCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
+							Ensure correct patient identification
+						</li>
+						<li className="flex items-center">
+							<CheckCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
+							Verify lead placement accuracy
+						</li>
+						<li className="flex items-center">
+							<CheckCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
+							Include relevant clinical context
+						</li>
+						<li className="flex items-center">
+							<CheckCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
+							Check file quality before upload
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -1135,324 +911,386 @@ const ECGAnalysis = () => {
 	);
 
 	const renderAnalysisTools = () => (
-		<div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-			<div className="flex items-center justify-between mb-4">
-				<h3 className="text-lg font-medium text-gray-900">Analysis Tools</h3>
-				<div className="flex space-x-2">
-					<button
-						onClick={() => setIsComparing(!isComparing)}
-						className={`flex items-center px-3 py-1 rounded-md ${
-							isComparing
-								? "bg-red-100 text-red-700"
-								: "bg-gray-100 text-gray-700"
-						}`}>
-						<div className="h-4 w-4 mr-1" />
-						Compare Mode
-					</button>
-					<button className="flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-md">
-						<BrainIcon className="h-4 w-4 mr-1" />
-						AI Analysis
-					</button>
-				</div>
+		<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+			<div className="mb-4">
+				<h3 className="text-lg font-semibold text-gray-900">Analysis Tools</h3>
 			</div>
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<div className="border rounded-lg p-4">
-					<h4 className="text-sm font-medium text-gray-900 mb-2">
-						Measurement Tools
-					</h4>
-					<div className="space-y-2">
-						<button className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
-							<LineChartIcon className="h-4 w-4 mr-2" />
-							Interval Measurement
-						</button>
-						<button className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
-							<ActivityIcon className="h-4 w-4 mr-2" />
-							Amplitude Measurement
-						</button>
-					</div>
-				</div>
-				<div className="border rounded-lg p-4">
-					<h4 className="text-sm font-medium text-gray-900 mb-2">
-						View Controls
-					</h4>
-					<div className="flex space-x-2">
-						<button className="p-2 hover:bg-gray-100 rounded-md">
-							<ZoomInIcon className="h-4 w-4" />
-						</button>
-						<button className="p-2 hover:bg-gray-100 rounded-md">
-							<ZoomOutIcon className="h-4 w-4" />
-						</button>
-						<button className="p-2 hover:bg-gray-100 rounded-md">
-							<RotateCcwIcon className="h-4 w-4" />
-						</button>
-					</div>
-				</div>
-				<div className="border rounded-lg p-4">
-					<h4 className="text-sm font-medium text-gray-900 mb-2">
-						AI Annotations
-					</h4>
-					<div className="space-y-2 text-sm text-gray-600">
-						<div className="flex items-center">
-							<CheckCircleIcon className="h-4 w-4 text-green-500 mr-2" />
-							Normal Sinus Rhythm
-						</div>
-						<div className="flex items-center">
-							<AlertCircleIcon className="h-4 w-4 text-yellow-500 mr-2" />
-							Possible Arrhythmia
-						</div>
-					</div>
-				</div>
+			<div className="space-y-4 text-gray-700 text-sm">
+				<button
+					type="button"
+					className="w-full text-left p-3 rounded-md border border-gray-300 hover:bg-blue-50 transition-colors duration-300">
+					<h4 className="font-semibold">Resting ECG</h4>
+					<p>Standard 12-lead ECG recording</p>
+				</button>
+				<button
+					type="button"
+					className="w-full text-left p-3 rounded-md border border-gray-300 hover:bg-blue-50 transition-colors duration-300">
+					<h4 className="font-semibold">Holter Monitor</h4>
+					<p>24-48 hour continuous recording</p>
+				</button>
+				<button
+					type="button"
+					className="w-full text-left p-3 rounded-md border border-gray-300 hover:bg-blue-50 transition-colors duration-300">
+					<h4 className="font-semibold">Stress ECG</h4>
+					<p>Exercise stress test recording</p>
+				</button>
 			</div>
 		</div>
 	);
 
-	const filteredECGs = ecgRecords.filter((ecg) => {
-		const matchesSearch = ecg.patientName
-			.toLowerCase()
-			.includes(searchTerm.toLowerCase());
-		const matchesStatus =
-			selectedStatus === "all" || ecg.status === selectedStatus;
-		return matchesSearch && matchesStatus;
-	});
+	const renderPatientList = () => {
+		const filteredPatients = mockPatients.filter((patient) =>
+			patient.name.toLowerCase().includes(patientSearchTerm.toLowerCase())
+		);
 
-	return (
-		<div className="space-y-6">
-			<style>{`
-        .animate-fade-in {
-          animation: fadeIn 0.6s ease-out;
-        }
-        .animate-slide-up {
-          animation: slideUp 0.4s ease-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-			{renderECGTypeSelector()}
-			{renderUploadSection()}
-			{renderAnalysisTools()}
-			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-				<div className="bg-white p-6 rounded-lg shadow-sm">
-					<div className="flex items-center justify-between">
-						<h3 className="text-lg font-medium text-gray-900">Normal</h3>
-						<span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-							5
-						</span>
+		return (
+			<div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+				<div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+					<h2 className="text-lg font-semibold text-gray-900">Patient List</h2>
+					<div className="relative flex-1 max-w-md">
+						<SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+						<input
+							type="text"
+							placeholder="Search patients..."
+							className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
+							value={patientSearchTerm}
+							onChange={(e) => setPatientSearchTerm(e.target.value)}
+						/>
 					</div>
-				</div>
-				<div className="bg-white p-6 rounded-lg shadow-sm">
-					<div className="flex items-center justify-between">
-						<h3 className="text-lg font-medium text-gray-900">Abnormal</h3>
-						<span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-							3
-						</span>
-					</div>
-				</div>
-				<div className="bg-white p-6 rounded-lg shadow-sm">
-					<div className="flex items-center justify-between">
-						<h3 className="text-lg font-medium text-gray-900">Critical</h3>
-						<span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-							1
-						</span>
-					</div>
-				</div>
-				<div className="bg-white p-6 rounded-lg shadow-sm">
-					<div className="flex items-center justify-between">
-						<h3 className="text-lg font-medium text-gray-900">Pending</h3>
-						<span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-							2
-						</span>
-					</div>
-				</div>
-			</div>
-			<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-				<div className="relative flex-1">
-					<SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-					<input
-						type="text"
-						placeholder="Search by patient name..."
-						className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
-				</div>
-				<div className="flex items-center space-x-4">
-					<select
-						className="border border-gray-300 rounded-md px-4 py-2 focus:ring-red-500 focus:border-red-500"
-						value={selectedStatus}
-						onChange={(e) => setSelectedStatus(e.target.value)}>
-						<option value="all">All Status</option>
-						<option value="normal">Normal</option>
-						<option value="abnormal">Abnormal</option>
-						<option value="critical">Critical</option>
-						<option value="pending">Pending</option>
-					</select>
-					<button className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-						<FilterIcon className="h-5 w-5 text-gray-400 mr-2" />
-						More Filters
-					</button>
-				</div>
-			</div>
-			<div className="bg-white shadow-sm rounded-lg overflow-hidden">
-				<div className="px-6 py-4 border-b border-gray-200">
-					<h2 className="text-lg font-medium text-gray-900">ECG Records</h2>
 				</div>
 				<div className="divide-y divide-gray-200">
-					{filteredECGs.map((record) => (
-						<div key={record.id} className="p-6">
+					{filteredPatients.map((patient, index) => (
+						<div
+							key={patient.id}
+							className={`p-6 hover:bg-blue-50 cursor-pointer transition-colors duration-300 ${
+								index % 2 === 0 ? "bg-gray-50" : "bg-white"
+							}`}
+							onClick={() => setSelectedPatient(patient)}>
 							<div className="flex items-center justify-between">
-								<div className="flex items-center space-x-4">
-									<div className="flex-shrink-0">
-										{getPriorityIcon(record.priority)}
+								<div className="flex items-center">
+									<div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm mr-4">
+										{patient.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")
+											.toUpperCase()}
 									</div>
 									<div>
-										<h4 className="text-sm font-medium text-gray-900">
-											{record.patientName}
+										<h4 className="text-sm font-semibold text-gray-900">
+											{patient.name}
 										</h4>
-										<div className="flex items-center text-sm text-gray-500">
-											<CalendarIcon className="h-4 w-4 mr-1" />
-											{record.date}
-											<HeartPulseIcon className="h-4 w-4 ml-4 mr-1" />
-											{record.rhythm}
-										</div>
+										<p className="text-sm text-gray-600">
+											DOB: {patient.dateOfBirth}
+										</p>
 									</div>
 								</div>
-								<div className="flex items-center space-x-4">
-									<span
-										className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-											record.status
-										)}`}>
-										{record.status.charAt(0).toUpperCase() +
-											record.status.slice(1)}
-									</span>
-									<button
-										onClick={() => toggleRecordExpansion(record.id)}
-										className="text-gray-500 hover:text-gray-700">
-										{expandedRecords.includes(record.id) ? (
-											<ChevronRightIcon className="h-5 w-5 transform rotate-90" />
-										) : (
-											<ChevronRightIcon className="h-5 w-5" />
-										)}
-									</button>
-								</div>
+								<button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+									Select
+								</button>
 							</div>
-							{expandedRecords.includes(record.id) && (
-								<div className="mt-4 pl-12">
-									<div className="mb-6">
-										<div className="flex justify-between items-center mb-4">
-											<h3 className="text-sm font-medium text-gray-900">
-												ECG Recording
-											</h3>
-											<div className="flex space-x-2">
-												<button className="p-2 hover:bg-gray-100 rounded-full">
-													<ZoomInIcon className="h-4 w-4 text-gray-600" />
-												</button>
-												<button className="p-2 hover:bg-gray-100 rounded-full">
-													<ZoomOutIcon className="h-4 w-4 text-gray-600" />
-												</button>
-												<button className="p-2 hover:bg-gray-100 rounded-full">
-													<RotateCcwIcon className="h-4 w-4 text-gray-600" />
-												</button>
-											</div>
-										</div>
-										<div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-											<ActivityIcon className="h-24 w-24 text-gray-300" />
-										</div>
-									</div>
-									<div className="grid grid-cols-4 gap-4 mb-6">
-										<div className="bg-gray-50 p-3 rounded-lg">
-											<p className="text-xs text-gray-500">Heart Rate</p>
-											<p className="text-lg font-semibold">
-												{record.heartRate} <span className="text-sm">bpm</span>
-											</p>
-										</div>
-										<div className="bg-gray-50 p-3 rounded-lg">
-											<p className="text-xs text-gray-500">PR Interval</p>
-											<p className="text-lg font-semibold">
-												{record.prInterval} <span className="text-sm">ms</span>
-											</p>
-										</div>
-										<div className="bg-gray-50 p-3 rounded-lg">
-											<p className="text-xs text-gray-500">QRS Interval</p>
-											<p className="text-lg font-semibold">
-												{record.qrsInterval} <span className="text-sm">ms</span>
-											</p>
-										</div>
-										<div className="bg-gray-50 p-3 rounded-lg">
-											<p className="text-xs text-gray-500">QT Interval</p>
-											<p className="text-lg font-semibold">
-												{record.qtInterval} <span className="text-sm">ms</span>
-											</p>
-										</div>
-									</div>
-									<div className="grid grid-cols-2 gap-6">
-										<div>
-											<h4 className="text-sm font-medium text-gray-900 mb-2">
-												Findings
-											</h4>
-											<ul className="space-y-1">
-												{record.findings.map((finding, index) => (
-													<li
-														key={index}
-														className="flex items-start text-sm text-gray-600">
-														<ChevronRightIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5" />
-														{finding}
-													</li>
-												))}
-											</ul>
-										</div>
-										<div>
-											<h4 className="text-sm font-medium text-gray-900 mb-2">
-												Recommendations
-											</h4>
-											<ul className="space-y-1">
-												{record.recommendations.map((rec, index) => (
-													<li
-														key={index}
-														className="flex items-start text-sm text-gray-600">
-														<ChevronRightIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5" />
-														{rec}
-													</li>
-												))}
-											</ul>
-										</div>
-									</div>
-									<div className="mt-6 flex justify-end space-x-4">
-										<button className="text-sm font-medium text-gray-600 hover:text-gray-900">
-											Download PDF
-										</button>
-										<button className="text-sm font-medium text-red-600 hover:text-red-900">
-											View Full Analysis
-										</button>
-									</div>
-								</div>
-							)}
 						</div>
 					))}
 				</div>
 			</div>
+		);
+	};
+
+	const renderDashboardCards = () => {
+		const patientRecords = selectedPatient
+			? ecgRecords.filter((ecg) => ecg.patientId === selectedPatient.id)
+			: ecgRecords;
+		const pendingCount = patientRecords.filter(
+			(ecg) => ecg.status === "pending"
+		).length;
+		const completedTodayCount = patientRecords.filter(
+			(ecg) =>
+				ecg.date === new Date().toISOString().split("T")[0] &&
+				ecg.status !== "pending"
+		).length;
+		const requiresAttentionCount = patientRecords.filter(
+			(ecg) => ecg.status === "critical" || ecg.status === "abnormal"
+		).length;
+
+		return (
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:scale-105">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center">
+							<AlertCircleIcon className="h-6 w-6 text-yellow-500 mr-2" />
+							<h3 className="text-lg font-semibold text-gray-900">
+								Pending Analysis
+							</h3>
+						</div>
+						<span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
+							{pendingCount}
+						</span>
+					</div>
+				</div>
+				<div className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:scale-105">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center">
+							<CheckCircleIcon className="h-6 w-6 text-green-500 mr-2" />
+							<h3 className="text-lg font-semibold text-gray-900">
+								Completed Today
+							</h3>
+						</div>
+						<span className="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
+							{completedTodayCount}
+						</span>
+					</div>
+				</div>
+				<div className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:scale-105">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center">
+							<AlertCircleIcon className="h-6 w-6 text-red-500 mr-2" />
+							<h3 className="text-lg font-semibold text-gray-900">
+								Requires Attention
+							</h3>
+						</div>
+						<span className="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">
+							{requiresAttentionCount}
+						</span>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
+	const filteredECGs = ecgRecords.filter((ecg) => {
+		if (!selectedPatient) return false;
+		const matchesPatient = ecg.patientId === selectedPatient.id;
+		const matchesSearch = ecg.patientName
+			.toLowerCase()
+			.includes(searchTerm.toLowerCase());
+		// Removed selectedStatus state as filter is removed, so always true
+		const matchesStatus = true;
+		return matchesPatient && matchesSearch && matchesStatus;
+	});
+
+	const renderECGRecords = () => (
+		<div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+			<div className="px-6 py-4 border-b border-gray-200">
+				<h2 className="text-lg font-semibold text-gray-900">ECG Records</h2>
+			</div>
+			<div className="divide-y divide-gray-200">
+				{filteredECGs.map((record) => (
+					<div
+						key={record.id}
+						className="p-6 hover:bg-blue-50 transition-colors duration-300">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center space-x-4">
+								<div className="flex-shrink-0">
+									{getPriorityIcon(record.priority)}
+								</div>
+								<div>
+									<h4 className="text-sm font-semibold text-gray-900">
+										{record.patientName}
+									</h4>
+									<div className="flex items-center text-sm text-gray-600">
+										<CalendarIcon className="h-4 w-4 mr-1" />
+										{record.date}
+										<HeartPulseIcon className="h-4 w-4 ml-4 mr-1" />
+										{record.rhythm}
+									</div>
+								</div>
+							</div>
+							<div className="flex items-center space-x-4">
+								<span
+									className={`px-3 py-1 rounded-full text-xs font-semibold ring-1 ${getStatusColor(
+										record.status
+									)}`}>
+									{record.status.charAt(0).toUpperCase() +
+										record.status.slice(1)}
+								</span>
+								<button
+									onClick={() => toggleRecordExpansion(record.id)}
+									className="text-gray-500 hover:text-blue-600">
+									{expandedRecords.includes(record.id) ? (
+										<ChevronRightIcon className="h-5 w-5 transform rotate-90" />
+									) : (
+										<ChevronRightIcon className="h-5 w-5" />
+									)}
+								</button>
+							</div>
+						</div>
+						{expandedRecords.includes(record.id) && (
+							<div className="mt-4 pl-12">
+								<div className="mb-6">
+									<div className="flex justify-between items-center mb-4">
+										<h3 className="text-sm font-semibold text-gray-900">
+											ECG Recording
+										</h3>
+										<div className="flex space-x-2">
+											<button className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-300">
+												<ZoomInIcon className="h-4 w-4 text-blue-500" />
+											</button>
+											<button className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-300">
+												<ZoomOutIcon className="h-4 w-4 text-blue-500" />
+											</button>
+											<button className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-300">
+												<RotateCcwIcon className="h-4 w-4 text-blue-500" />
+											</button>
+										</div>
+									</div>
+									<div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
+										<ActivityIcon className="h-24 w-24 text-blue-300" />
+									</div>
+								</div>
+								<div className="grid grid-cols-4 gap-4 mb-6">
+									<div className="bg-blue-50 p-3 rounded-lg">
+										<p className="text-xs text-gray-600">Heart Rate</p>
+										<p className="text-lg font-semibold text-gray-900">
+											{record.heartRate} <span className="text-sm">bpm</span>
+										</p>
+									</div>
+									<div className="bg-blue-50 p-3 rounded-lg">
+										<p className="text-xs text-gray-600">PR Interval</p>
+										<p className="text-lg font-semibold text-gray-900">
+											{record.prInterval} <span className="text-sm">ms</span>
+										</p>
+									</div>
+									<div className="bg-blue-50 p-3 rounded-lg">
+										<p className="text-xs text-gray-600">QRS Interval</p>
+										<p className="text-lg font-semibold text-gray-900">
+											{record.qrsInterval} <span className="text-sm">ms</span>
+										</p>
+									</div>
+									<div className="bg-blue-50 p-3 rounded-lg">
+										<p className="text-xs text-gray-600">QT Interval</p>
+										<p className="text-lg font-semibold text-gray-900">
+											{record.qtInterval} <span className="text-sm">ms</span>
+										</p>
+									</div>
+								</div>
+								<div className="grid grid-cols-2 gap-6 mb-6">
+									<div>
+										<h4 className="text-sm font-semibold text-gray-900 mb-2">
+											Findings
+										</h4>
+										<ul className="space-y-1">
+											{record.findings.map((finding, index) => (
+												<li
+													key={index}
+													className="flex items-start text-sm text-gray-600">
+													<ChevronRightIcon className="h-4 w-4 text-blue-500 mr-2 mt-0.5" />
+													{finding}
+												</li>
+											))}
+										</ul>
+									</div>
+									<div>
+										<h4 className="text-sm font-semibold text-gray-900 mb-2">
+											Recommendations
+										</h4>
+										<ul className="space-y-1">
+											{record.recommendations.map((rec, index) => (
+												<li
+													key={index}
+													className="flex items-start text-sm text-gray-600">
+													<ChevronRightIcon className="h-4 w-4 text-blue-500 mr-2 mt-0.5" />
+													{rec}
+												</li>
+											))}
+										</ul>
+									</div>
+								</div>
+								{record.technicianNotes && (
+									<div className="mb-6">
+										<h4 className="text-sm font-semibold text-gray-900 mb-2">
+											Technician Notes
+										</h4>
+										<p className="text-sm text-gray-600">
+											{record.technicianNotes}
+										</p>
+									</div>
+								)}
+								<div className="flex justify-end space-x-4">
+									<button className="text-sm font-medium text-gray-600 hover:text-blue-600">
+										Download PDF
+									</button>
+									<button className="text-sm font-medium text-blue-600 hover:text-blue-800">
+										View Full Analysis
+									</button>
+								</div>
+							</div>
+						)}
+					</div>
+				))}
+			</div>
+		</div>
+	);
+
+	return (
+		<div className="p-6 bg-gray-50 min-h-screen font-sans">
+			<style>{`
+				.animate-fade-in {
+					animation: fadeIn 0.6s ease-out;
+				}
+				.animate-scale-in {
+					animation: scaleIn 0.4s ease-out;
+				}
+				@keyframes fadeIn {
+					from { opacity: 0; }
+					to { opacity: 1; }
+				}
+				@keyframes scaleIn {
+					from { opacity: 0; transform: scale(0.95); }
+					to { opacity: 1; transform: scale(1); }
+				}
+				body {
+					font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				}
+			`}</style>
+			{!selectedPatient ? (
+				<div className="space-y-6">
+					{renderDashboardCards()}
+					{renderRecentRecordings()}
+					{renderPatientList()}
+				</div>
+			) : (
+				<div className="space-y-6">
+					<div className="flex items-center justify-between">
+						<h1 className="text-3xl font-bold text-gray-900">
+							ECG Analysis for {selectedPatient.name}
+						</h1>
+						<button
+							onClick={() => setSelectedPatient(null)}
+							className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+							<XIcon className="h-5 w-5 mr-1" />
+							Back to Patient List
+						</button>
+					</div>
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+							<div className="grid grid-cols-2 grid-rows-2 gap-6">
+								<div className="col-span-2">{renderPatientInfo()}</div>
+								<div></div>
+								<div></div>
+							</div>
+						<div className="grid grid-cols-2 gap-6">
+							<div>{renderAnalysisTools()}</div>
+							<div>{renderUploadSection()}</div>
+							<div className="col-span-2">{renderECGRecords()}</div>
+						</div>
+					</div>
+				</div>
+			)}
 			{showUploadModal && (
 				<div
 					className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in"
 					role="dialog"
 					aria-modal="true"
 					aria-labelledby="upload-ecg-modal-title">
-					<div className="bg-white rounded-2xl max-w-4xl w-full p-6 sm:p-8 relative shadow-2xl animate-slide-up">
+					<div className="bg-white rounded-2xl max-w-4xl w-full p-6 sm:p-8 relative shadow-2xl animate-scale-in">
 						<button
 							onClick={() => setShowUploadModal(false)}
-							className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
+							className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600"
 							aria-label="Close modal">
 							<XIcon className="w-6 h-6" />
 						</button>
 						<h2
 							id="upload-ecg-modal-title"
-							className="text-2xl font-bold text-gray-900 mb-6">
-							Upload New ECG
+							className="text-2xl font-semibold text-gray-900 mb-6">
+							Upload New ECG for {selectedPatient?.name}
 						</h2>
 						<EcgForm
 							onProcess={handleProcessEcg}
