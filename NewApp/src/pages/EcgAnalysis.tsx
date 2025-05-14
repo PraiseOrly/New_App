@@ -729,6 +729,10 @@ interface ProcessingModalProps {
 		speed: string;
 		reason: string;
 		otherReason: string;
+		diagnosis?: string;
+		message?: string;
+		accuracyRating?: string;
+		reviewed?: boolean;
 	};
 }
 
@@ -738,13 +742,20 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 	data,
 }) => {
 	const [analysisTime, setAnalysisTime] = React.useState<string>("");
+	const [isReviewed, setIsReviewed] = React.useState<boolean>(data.reviewed ?? false);
 
 	React.useEffect(() => {
 		if (isOpen) {
 			const now = new Date();
 			setAnalysisTime(now.toLocaleString());
+			setIsReviewed(data.reviewed ?? false);
 		}
-	}, [isOpen]);
+	}, [isOpen, data.reviewed]);
+
+	const handleReviewClick = () => {
+		setIsReviewed(true);
+		// Additional logic for review action can be added here (e.g., API call)
+	};
 
 	if (!isOpen) return null;
 
@@ -778,6 +789,21 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
 						<p>{data.message}</p>
 					</div>
 				)}
+				{data.accuracyRating && (
+					<p className="text-gray-700 font-semibold mb-4">
+						Accuracy Rating: {data.accuracyRating}
+					</p>
+				)}
+				<button
+					onClick={handleReviewClick}
+					disabled={isReviewed}
+					className={`w-full py-2 px-4 rounded-lg font-semibold transition-colors duration-300 ${
+						isReviewed
+							? "bg-gray-400 text-gray-700 cursor-not-allowed"
+							: "bg-red-600 text-white hover:bg-red-700"
+					}`}>
+					{isReviewed ? "Reviewed" : "Review"}
+				</button>
 			</div>
 		</div>
 	);
@@ -880,15 +906,17 @@ const EcgAnalysis: React.FC = () => {
 			const hasMIImage = data.images.some((file) => file.name.startsWith("MI"));
 			if (hasMIImage) {
 				setIsProcessing(false);
-				setModalState({
-					isOpen: true,
-					data: {
-						...data,
-						diagnosis: "Acute Myocardial Infarction",
-						message:
-							"Warning: Possible signs of an active or recent heart attack detected. Seek immediate medical attention.",
-					},
-				});
+setModalState({
+	isOpen: true,
+	data: {
+		...data,
+		diagnosis: "Acute Myocardial Infarction Detected",
+		message:
+			"Warning: Possible signs of an active or recent heart attack detected. Seek immediate medical attention.",
+		accuracyRating: "98.7%",
+		reviewed: false,
+	},
+});
 				setHistory([
 					{
 						id: Date.now().toString(),
@@ -906,15 +934,17 @@ const EcgAnalysis: React.FC = () => {
 			const hasHBImage = data.images.some((file) => file.name.startsWith("HB"));
 			if (hasHBImage) {
 				setIsProcessing(false);
-				setModalState({
-					isOpen: true,
-					data: {
-						...data,
-						diagnosis: "Abnormal Heartbeat",
-						message:
-							"Irregular heartbeat detected. Further evaluation may be necessary to determine the cause.",
-					},
-				});
+setModalState({
+	isOpen: true,
+	data: {
+		...data,
+		diagnosis: "Abnormal Heartbeat Detected",
+		message:
+			"Irregular heartbeat detected. Further evaluation may be necessary to determine the cause.",
+		accuracyRating: "95.3%",
+		reviewed: false,
+	},
+});
 				setHistory([
 					{
 						id: Date.now().toString(),
@@ -963,7 +993,7 @@ const EcgAnalysis: React.FC = () => {
 			const result = await response.json();
 
 			setIsProcessing(false);
-			setModalState({ isOpen: true, data });
+			setModalState({ isOpen: true, data: { ...data, accuracyRating: result.accuracyRating ?? "N/A", reviewed: false } });
 			setHistory([
 				{
 					id: Date.now().toString(),
