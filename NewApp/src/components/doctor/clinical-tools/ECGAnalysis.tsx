@@ -1488,7 +1488,7 @@ const renderPatientInfo = (selectedPatient: Patient | null, ecgRecords: ECGRecor
 
 			<div>
 				<h4 className="font-semibold text-gray-900 mb-1">🔗 Quick Actions</h4>
-				<div className="flex space-x-4">
+				<div className="flex space-x-4 flex-wrap">
 					<button className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center gap-2">
 						📞 Call Patient
 					</button>
@@ -1497,6 +1497,15 @@ const renderPatientInfo = (selectedPatient: Patient | null, ecgRecords: ECGRecor
 					</button>
 					<button className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-300 flex items-center gap-2">
 						📝 Create Prescription
+					</button>
+					<button className="bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors duration-300 flex items-center gap-2">
+						📅 Schedule Follow-Up
+					</button>
+					<button className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors duration-300 flex items-center gap-2">
+						🧪 Run Quality Check
+					</button>
+					<button className="bg-pink-600 text-white py-2 px-4 rounded-lg hover:bg-pink-700 transition-colors duration-300 flex items-center gap-2">
+						🧠 Refer to Cardiologist
 					</button>
 				</div>
 			</div>

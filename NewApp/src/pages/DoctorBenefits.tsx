@@ -205,9 +205,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 // Stats Component
 const StatsSection: React.FC = () => {
 	const stats = [
-		{ value: 1200, label: "Cardiologists Trust Us" },
-		{ value: 987, label: "AI Accuracy (%)" },
-		{ value: 50000, label: "Patients Served" },
+		{ value: 50, label: "ECG files tested from real-world settings" },
+		{ value: 92, label: " Preliminary AI accuracy in pilot studies (%)" },
+		{ value: 5, label: "Clinical advisors guiding development" },
 		{ value: 24, label: "Hours Support" },
 	];
 
@@ -355,7 +355,7 @@ const DoctorBenefits: React.FC = () => {
 			<section className="py-16 px-4 bg-white">
 				<div className="max-w-7xl mx-auto">
 					<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-12 text-center animate-fade-in">
-						Why Cardiologists Choose CardiacTek
+						Why Doctors Should Choose CardiacTek
 					</h2>
 					<StatsSection />
 				</div>
