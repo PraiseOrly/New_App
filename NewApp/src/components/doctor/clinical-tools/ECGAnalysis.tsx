@@ -27,12 +27,17 @@ interface Patient {
 	id: string;
 	name: string;
 	dateOfBirth: string;
+	sex?: "Male" | "Female" | "Other";
 	medicalHistory?: string[];
+	allergies?: string[];
+	profileImage?: string;
 	vitals?: {
 		bloodPressure: string;
 		temperature: string;
 		oxygenSaturation: string;
+		heartRate?: string;
 	};
+	upcomingAppointments?: { title: string; date: string }[];
 }
 
 interface ECGType {
@@ -90,34 +95,56 @@ const mockPatients: Patient[] = [
 		id: "1",
 		name: "Amara Nwosu",
 		dateOfBirth: "1975-06-15",
+		sex: "Female",
 		medicalHistory: ["Hypertension", "Type 2 Diabetes"],
+		allergies: ["Penicillin"],
+		profileImage: "/public/advanced.jpg",
 		vitals: {
 			bloodPressure: "130/85 mmHg",
 			temperature: "36.8°C",
 			oxygenSaturation: "98%",
+			heartRate: "78 bpm",
 		},
+		upcomingAppointments: [
+			{ title: "Follow-up ECG", date: "May 30, 2025" },
+			{ title: "Referral to cardiologist", date: "TBD" },
+		],
 	},
 	{
 		id: "2",
 		name: "Sofia Alvarez",
 		dateOfBirth: "1982-09-22",
+		sex: "Female",
 		medicalHistory: ["Asthma", "Hyperlipidemia"],
+		allergies: [],
+		profileImage: "/public/cardiacteklogo.jpg",
 		vitals: {
 			bloodPressure: "125/80 mmHg",
 			temperature: "37.0°C",
 			oxygenSaturation: "97%",
+			heartRate: "75 bpm",
 		},
+		upcomingAppointments: [
+			{ title: "Routine Checkup", date: "June 15, 2025" },
+		],
 	},
 	{
 		id: "3",
 		name: "Hiroshi Tanaka",
 		dateOfBirth: "1968-03-10",
+		sex: "Male",
 		medicalHistory: ["Coronary Artery Disease", "Previous MI"],
+		allergies: ["Aspirin"],
+		profileImage: "/public/innovate.jpg",
 		vitals: {
 			bloodPressure: "140/90 mmHg",
 			temperature: "36.6°C",
 			oxygenSaturation: "96%",
+			heartRate: "80 bpm",
 		},
+		upcomingAppointments: [
+			{ title: "Cardiology Consultation", date: "July 1, 2025" },
+		],
 	},
 ];
 
@@ -1352,39 +1379,128 @@ const renderRecentRecordings = (ecgRecords: ECGRecord[]) => {
 
 const renderPatientInfo = (selectedPatient: Patient | null, ecgRecords: ECGRecord[]) => {
 	if (!selectedPatient) return null;
+
 	const patientRecords = ecgRecords.filter((ecg) => ecg.patientId === selectedPatient.id);
 	const latestRecord = patientRecords[0];
+
+	// Calculate age from dateOfBirth
+	const calculateAge = (dob: string) => {
+		const birthDate = new Date(dob);
+		const today = new Date();
+		let age = today.getFullYear() - birthDate.getFullYear();
+		const m = today.getMonth() - birthDate.getMonth();
+		if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+			age--;
+		}
+		return age;
+	};
+
 	return (
-		<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-			<h3 className="text-lg font-semibold text-gray-900 mb-4">
-				Patient Information
-			</h3>
-			<p>
-				<strong>Name:</strong> {selectedPatient.name}
-			</p>
-			<p>
-				<strong>Date of Birth:</strong> {selectedPatient.dateOfBirth}
-			</p>
-			{selectedPatient.medicalHistory && (
-				<p>
-					<strong>Medical History:</strong>{" "}
-					{selectedPatient.medicalHistory.join(", ")}
-				</p>
-			)}
-			{selectedPatient.vitals && (
-				<div className="mt-4 grid grid-cols-2 gap-4">
+		<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-6">
+			<h3 className="text-lg font-semibold text-gray-900 mb-4">🧑 Patient Bio</h3>
+			<div className="flex items-center space-x-6">
+				{selectedPatient.profileImage ? (
+					<img
+						src={selectedPatient.profileImage}
+						alt={`${selectedPatient.name} profile`}
+						className="w-24 h-24 rounded-full object-cover border border-gray-300"
+					/>
+				) : (
+					<div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl font-semibold border border-gray-300">
+						{selectedPatient.name
+							.split(" ")
+							.map((n) => n[0])
+							.join("")
+							.toUpperCase()}
+					</div>
+				)}
+				<div>
+					<p>
+						<strong>Name:</strong> {selectedPatient.name}
+					</p>
+					<p>
+						<strong>Age:</strong> {calculateAge(selectedPatient.dateOfBirth)}
+					</p>
+					<p>
+						<strong>Sex:</strong> {selectedPatient.sex ?? "N/A"}
+					</p>
+				</div>
+			</div>
+
+			<div>
+				<h4 className="font-semibold text-gray-900 mb-1">Conditions</h4>
+				{selectedPatient.medicalHistory && selectedPatient.medicalHistory.length > 0 ? (
+					<ul className="list-disc list-inside text-gray-700">
+						{selectedPatient.medicalHistory.map((condition, idx) => (
+							<li key={idx}>{condition}</li>
+						))}
+					</ul>
+				) : (
+					<p className="text-gray-500">No known conditions</p>
+				)}
+			</div>
+
+			<div>
+				<h4 className="font-semibold text-gray-900 mb-1">Allergies</h4>
+				{selectedPatient.allergies && selectedPatient.allergies.length > 0 ? (
+					<ul className="list-disc list-inside text-gray-700">
+						{selectedPatient.allergies.map((allergy, idx) => (
+							<li key={idx}>{allergy}</li>
+						))}
+					</ul>
+				) : (
+					<p className="text-gray-500">No known allergies</p>
+				)}
+			</div>
+
+			<div>
+				<h4 className="font-semibold text-gray-900 mb-1">📋 Vitals Timeline</h4>
+				<div className="grid grid-cols-2 gap-4 text-gray-700">
 					<div>
-						<strong>Blood Pressure:</strong> {selectedPatient.vitals.bloodPressure}
+						<strong>BP:</strong> {selectedPatient.vitals?.bloodPressure ?? "N/A"}
 					</div>
 					<div>
-						<strong>Temperature:</strong> {selectedPatient.vitals.temperature}
+						<strong>Temp:</strong> {selectedPatient.vitals?.temperature ?? "N/A"}
 					</div>
 					<div>
-						<strong>Oxygen Saturation:</strong>{" "}
-						{selectedPatient.vitals.oxygenSaturation}
+						<strong>O2 Sat:</strong> {selectedPatient.vitals?.oxygenSaturation ?? "N/A"}
+					</div>
+					<div>
+						<strong>HR:</strong> {selectedPatient.vitals?.heartRate ?? "N/A"}
 					</div>
 				</div>
-			)}
+			</div>
+
+			<div>
+				<h4 className="font-semibold text-gray-900 mb-1">🗓️ Upcoming Appointments</h4>
+				{selectedPatient.upcomingAppointments && selectedPatient.upcomingAppointments.length > 0 ? (
+					<ul className="list-disc list-inside text-gray-700">
+						{selectedPatient.upcomingAppointments.map((appt, idx) => (
+							<li key={idx}>
+								{appt.title} — {appt.date}
+							</li>
+						))}
+					</ul>
+				) : (
+					<p className="text-gray-500">No upcoming appointments</p>
+				)}
+			</div>
+
+			<div>
+				<h4 className="font-semibold text-gray-900 mb-1">🔗 Quick Actions</h4>
+				<div className="flex space-x-4">
+					<button className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center gap-2">
+						📞 Call Patient
+					</button>
+					<button className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-300 flex items-center gap-2">
+						📧 Message
+					</button>
+					<button className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-300 flex items-center gap-2">
+						📝 Create Prescription
+					</button>
+				</div>
+			</div>
+
 			{latestRecord && (
 				<div className="mt-4">
 					<strong>Latest ECG Status:</strong>{" "}
@@ -1577,7 +1693,7 @@ const ECGAnalysis: React.FC = () => {
 						<div>{renderAnalysisTools()}</div>
 					</div>
 					<div className="mt-6">
-						<ECGTimelineView />
+					<ECGTimelineView selectedPatient={selectedPatient} patientECGData={filteredECGs} />
 					</div>
 					<div className="mt-6">
 						{renderUploadSection(setShowUploadModal)}

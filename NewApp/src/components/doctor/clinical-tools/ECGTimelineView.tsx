@@ -43,10 +43,14 @@ interface ECGRecord {
 	id: string;
 	date: string;
 	type: "resting" | "holter" | "stress";
-	aiSummary: string;
+	aiSummary?: string;
 	status: "normal" | "abnormal" | "critical" | "pending";
-	reviewed: boolean;
-	downloadable: boolean;
+	reviewed?: boolean;
+	downloadable?: boolean;
+	heartRate: number;
+	prInterval: number;
+	qrsInterval: number;
+	qtInterval: number;
 }
 
 const mockECGRecords: ECGRecord[] = [
@@ -58,6 +62,10 @@ const mockECGRecords: ECGRecord[] = [
 		status: "normal",
 		reviewed: true,
 		downloadable: true,
+		heartRate: 70,
+		prInterval: 160,
+		qrsInterval: 90,
+		qtInterval: 380,
 	},
 	{
 		id: "2",
@@ -67,6 +75,10 @@ const mockECGRecords: ECGRecord[] = [
 		status: "abnormal",
 		reviewed: false,
 		downloadable: true,
+		heartRate: 88,
+		prInterval: 180,
+		qrsInterval: 110,
+		qtInterval: 410,
 	},
 	{
 		id: "3",
@@ -76,6 +88,10 @@ const mockECGRecords: ECGRecord[] = [
 		status: "critical",
 		reviewed: false,
 		downloadable: false,
+		heartRate: 115,
+		prInterval: 200,
+		qrsInterval: 120,
+		qtInterval: 450,
 	},
 ];
 
@@ -280,7 +296,34 @@ const Chart: React.FC<ChartProps> = ({ data, viewType, width, height }) => {
 
 };
 
-const ECGTimelineView: React.FC = () => {
+interface Patient {
+	id: string;
+	name: string;
+	dateOfBirth: string;
+	medicalHistory?: string[];
+	vitals?: {
+		bloodPressure: string;
+		temperature: string;
+		oxygenSaturation: string;
+	};
+}
+
+interface ECGTimelineViewProps {
+	selectedPatient: Patient | null;
+	patientECGData: ECGRecord[];
+}
+
+const mockTimeSeriesDataLocal = [
+	{ date: "2023-12-01", value: 70 },
+	{ date: "2023-12-02", value: 72 },
+	{ date: "2023-12-03", value: 68 },
+	{ date: "2023-12-04", value: 75 },
+	{ date: "2023-12-05", value: 73 },
+	{ date: "2023-12-06", value: 71 },
+	{ date: "2023-12-07", value: 69 },
+];
+
+const ECGTimelineView: React.FC<ECGTimelineViewProps> = ({ selectedPatient, patientECGData }) => {
 	const [filters, setFilters] = useState<{
 		dateFrom: string;
 		dateTo: string;
@@ -303,7 +346,7 @@ const ECGTimelineView: React.FC = () => {
 		setFilters((prev) => ({ ...prev, [field]: value }));
 	};
 
-	const filteredECGs = mockECGRecords
+	const filteredECGs = patientECGData
 		.filter((ecg) => {
 			// Filter by date range
 			if (filters.dateFrom && ecg.date < filters.dateFrom) return false;
@@ -317,7 +360,7 @@ const ECGTimelineView: React.FC = () => {
 
 			// Filter by reviewed
 			if (filters.reviewed !== "all") {
-				const isReviewed = ecg.reviewed;
+				const isReviewed = ecg.reviewed ?? false;
 				if (
 					(filters.reviewed === "reviewed" && !isReviewed) ||
 					(filters.reviewed === "not_reviewed" && isReviewed)
@@ -327,7 +370,7 @@ const ECGTimelineView: React.FC = () => {
 
 			// Filter by downloadable
 			if (filters.downloadable !== "all") {
-				const isDownloadable = ecg.downloadable;
+				const isDownloadable = ecg.downloadable ?? false;
 				if (
 					(filters.downloadable === "yes" && !isDownloadable) ||
 					(filters.downloadable === "no" && isDownloadable)
@@ -436,6 +479,33 @@ const ECGTimelineView: React.FC = () => {
 		);
 	};
 
+	if (!selectedPatient) {
+		return (
+			<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 max-w-4xl mx-auto text-center text-gray-600">
+				Please select a patient to view ECG trend graphs and records.
+			</div>
+		);
+	}
+
+	if (filteredECGs.length === 0) {
+		return (
+			<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 max-w-4xl mx-auto text-center text-gray-600">
+				No ECG data available for the selected patient.
+			</div>
+		);
+	}
+
+	// Prepare time series data for chart from filteredECGs
+	const timeSeriesData = filteredECGs
+		.map((ecg) => ({
+			date: ecg.date,
+			HR: ecg.heartRate,
+			QT: ecg.qtInterval,
+			PR: ecg.prInterval,
+			QRS: ecg.qrsInterval,
+		}))
+		.sort((a, b) => (a.date < b.date ? -1 : 1)); // Ascending order for chart
+
 	return (
 		<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 max-w-4xl mx-auto">
 			<h2 className="text-lg font-semibold text-gray-900 mb-4">ECG Timeline View</h2>
@@ -464,49 +534,10 @@ const ECGTimelineView: React.FC = () => {
 				</div>
 			</div>
 			<div className="mb-6">
-				<Chart data={mockTimeSeriesData} viewType={viewType} width={700} height={250} />
-			</div>
-			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-				{renderFilter("Date From", "dateFrom", [
-					{ value: "", label: "All" },
-					// Date inputs handled separately
-				])}
-				{renderFilter("Date To", "dateTo", [
-					{ value: "", label: "All" },
-					// Date inputs handled separately
-				])}
-				{renderFilter("Type", "type", [
-					{ value: "all", label: "All" },
-					{ value: "resting", label: "Resting" },
-					{ value: "holter", label: "Holter" },
-					{ value: "stress", label: "Stress" },
-				])}
-				{renderFilter("Flagged", "flagged", [
-					{ value: "all", label: "All" },
-					{ value: "normal", label: "Normal" },
-					{ value: "abnormal", label: "Abnormal" },
-					{ value: "critical", label: "Critical" },
-					{ value: "pending", label: "Pending" },
-				])}
-				{renderFilter("Reviewed", "reviewed", [
-					{ value: "all", label: "All" },
-					{ value: "reviewed", label: "Reviewed" },
-					{ value: "not_reviewed", label: "Not Reviewed" },
-				])}
-				{renderFilter("Downloadable", "downloadable", [
-					{ value: "all", label: "All" },
-					{ value: "yes", label: "Yes" },
-					{ value: "no", label: "No" },
-				])}
-			</div>
-			<div className="divide-y divide-gray-200 max-h-[400px] overflow-y-auto">
-				{filteredECGs.length === 0 ? (
-					<p className="text-gray-600 text-center py-10">No ECG records found.</p>
-				) : (
-					filteredECGs.map(renderECGCard)
-				)}
+				<Chart data={timeSeriesData} viewType={viewType} width={700} height={250} />
 			</div>
 		</div>
 	);
 };
 
+export default ECGTimelineView;
