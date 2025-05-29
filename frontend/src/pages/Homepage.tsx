@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import FeatureCard from "../components/FeatureCard";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import RequestDemoModal from "../components/RequestDemoModal";
+import FeatureCard from "../components/Homepage/FeatureCard";
+import Footer from "../components/Homepage/Footer";
+import Navbar from "../components/Homepage/Navbar";
+import RequestDemoModal from "../components/Homepage/RequestDemoModal";
 
 interface LazyImageProps {
 	src: string;

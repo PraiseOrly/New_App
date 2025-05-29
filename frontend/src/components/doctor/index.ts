@@ -1,0 +1,11 @@
+export { default as Appointments } from './Appointments';
+export { default as DoctorHome } from './DoctorHome';
+export { default as DoctorSidebar } from './DoctorSidebar';
+export { default as ECGAnalysis } from './ECGAnalysis';
+export { default as PatientManagement } from './PatientManagement';
+export { default as Prescriptions } from './Prescriptions';
+export { default as Profile } from './Profile';
+export { default as Reports } from './Reports';
+export * from './admin';
+export * from './clinical-tools';
+export * from './patient-management';
