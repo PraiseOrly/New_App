@@ -11,7 +11,7 @@ import PatientBenefits from './pages/patient_app/PatientBenefits';
 import ErrorPage from './pages/shared/ErrorPage';
 import NotFoundPage from './pages/shared/NotFoundPage';
 
-import Research from './pages/Research';
+import Research from './pages/homepage/Research';
 import ArrhythmiaDetection from './pages/ArrhythmiaDetection';
 import EcgAnalysis from './pages/shared/EcgAnalysis';
 import Certifications from './pages/Certifications';
