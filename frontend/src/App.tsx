@@ -28,8 +28,8 @@ import Quality from './pages/Quality';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import LiveAssistant from './pages/shared/LiveAssistant';
-import LiveMessageAssistant from './components/LiveMessageAssistant';
-import ErrorBoundary from './components/ErrorBoundary';
+import LiveMessageAssistant from './components/shared/LiveMessageAssistant';
+import ErrorBoundary from './components/shared/ErrorBoundary';
 import { UserProvider } from './context/UserContext';
 export function App() {
   return <ErrorBoundary>
