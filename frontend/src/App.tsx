@@ -12,11 +12,11 @@ import ErrorPage from './pages/shared/ErrorPage';
 import NotFoundPage from './pages/shared/NotFoundPage';
 
 import Research from './pages/homepage/Research';
-import ArrhythmiaDetection from './pages/ArrhythmiaDetection';
+import ArrhythmiaDetection from './pages/homepage/ArrhythmiaDetection';
 import EcgAnalysis from './pages/shared/EcgAnalysis';
-import Certifications from './pages/Certifications';
+import Certifications from './pages/homepage/Certifications';
 import RiskAssessment from './pages/shared/RiskAssessment';
-import LongitudinalTracking from './pages/LongitudinalTracking';
+import LongitudinalTracking from './pages/shared/LongitudinalTracking';
 import EhrIntegration from './pages/EhrIntegration';
 import TreatmentGuidelines from './pages/TreatmentGuidelines';
 import ClinicalGuidance from './pages/ClinicalGuidance';
