@@ -2,12 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/homepage/Homepage';
 import AuthPage from './pages/AuthPage';
-import DoctorDashboard from './pages/DoctorDashboard';
-import PatientDashboard from './pages/PatientDashboard';
-import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
-import DoctorBenefits from './pages/DoctorBenefits';
-import PatientBenefits from './pages/PatientBenefits';
+import DoctorDashboard from './pages/doctor_app/DoctorDashboard';
+import PatientDashboard from './pages/patient_app/PatientDashboard';
+import AboutPage from './pages/homepage/AboutPage';
+import ContactPage from './pages/homepage/ContactPage';
+import DoctorBenefits from './pages/doctor_app/DoctorBenefits';
+import PatientBenefits from './pages/patient_app/PatientBenefits';
 import ErrorPage from './pages/shared/ErrorPage';
 import NotFoundPage from './pages/shared/NotFoundPage';
 
