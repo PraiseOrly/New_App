@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/homepage/Homepage';
-import AuthPage from './pages/AuthPage';
+import AuthPage from './pages/shared/AuthPage';
 import DoctorDashboard from './pages/doctor_app/DoctorDashboard';
 import PatientDashboard from './pages/patient_app/PatientDashboard';
 import AboutPage from './pages/homepage/AboutPage';
