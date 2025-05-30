@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Homepage/Navbar";
 import { HeartPulseIcon, XIcon, DownloadIcon } from "lucide-react";
-import Footer from "../components/Footer";
+import Footer from "../../components/Homepage/Footer";
+
 
 interface LazyImageProps {
 	src: string;

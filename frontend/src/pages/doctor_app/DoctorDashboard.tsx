@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import DashboardLayout from '../components/DashboardLayout';
+import DashboardLayout from '../components/doctor/DashboardLayout';
 import DoctorHome from '../components/doctor/DoctorHome';
 import FollowUpRecords from '../components/doctor/patient-management/FollowUpRecords';
 import PrescriptionManagement from '../components/doctor/patient-management/PrescriptionManagement';

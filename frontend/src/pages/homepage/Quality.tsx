@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Homepage/Navbar";
 import { CheckCircleIcon, ChevronDownIcon, XIcon, DownloadIcon } from "lucide-react";
 
-import { LazyImage, Slideshow, ResourceModal } from "../components/ResourceModal";
+import { LazyImage, Slideshow, ResourceModal } from "../../components/shared/ResourceModal";
 
 const Quality: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,6 +1,10 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import DashboardLayout from '../components/DashboardLayout';
+// Update the import path below to match the actual location and filename of DashboardLayout
+// For example, if the file is named 'dashboardLayout.tsx' or is in a different folder, update accordingly:
+import DashboardLayout from '../components/patient/dashboardLayout';
+// or, if the file is in 'components/shared':
+// import DashboardLayout from '../components/shared/DashboardLayout';
 import PatientHome from '../components/patient/PatientHome';
 import PersonalInfo from '../components/patient/health-management/PersonalInfo';
 import PatientHistory from '../components/patient/health-management/PatientHistory';

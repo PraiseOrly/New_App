@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Homepage/Navbar";
-import RequestDemoModal from "../components/Homepage/RequestDemoModal";
-import Footer from "../components/Homepage/Footer";
+import Navbar from "../../components/Homepage/Navbar";
+import RequestDemoModal from "../../components/Homepage/RequestDemoModal";
+import Footer from "../../components/Homepage/Footer";
 import {
 	HeartPulseIcon,
 	ChevronDownIcon,

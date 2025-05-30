@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Homepage/Navbar";
 import { TrendingUpIcon, ChevronDownIcon, XIcon, DownloadIcon, PlayCircleIcon } from "lucide-react";
 
-import { LazyImage, Slideshow, ResourceModal } from "../components/ResourceModal";
+import { LazyImage, Slideshow, ResourceModal } from "../../components/shared/ResourceModal";
 
 const LongitudinalTracking: React.FC = () => {
   const [trendIndex, setTrendIndex] = useState(0);

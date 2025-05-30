@@ -1,8 +1,8 @@
 import { ArrowRightIcon, ChevronDownIcon, XIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+import Footer from "../../components/Homepage/Footer";
+import Navbar from "../../components/Homepage/Navbar";
 
 const Slideshow: React.FC = () => {
 	const slides = [

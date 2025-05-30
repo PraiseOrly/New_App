@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Homepage/Navbar";
 import { HeartIcon, ChevronDownIcon, XIcon, DownloadIcon } from "lucide-react";
 
-import { LazyImage, Slideshow, ResourceModal } from "../components/ResourceModal";
+import { LazyImage, Slideshow, ResourceModal } from "../../components/shared/ResourceModal";
 
 const TreatmentGuidelines: React.FC = () => {
   const [filter, setFilter] = useState<string>("all");
