@@ -16,7 +16,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
-    "vite": "^5.4.14"
+    "vite": "^5.4.19"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",
