@@ -17,20 +17,13 @@ import EcgAnalysis from './pages/shared/EcgAnalysis';
 import Certifications from './pages/homepage/Certifications';
 import RiskAssessment from './pages/shared/RiskAssessment';
 import LongitudinalTracking from './pages/shared/LongitudinalTracking';
-import EhrIntegration from './pages/EhrIntegration';
-import TreatmentGuidelines from './pages/TreatmentGuidelines';
-import ClinicalGuidance from './pages/ClinicalGuidance';
-import ResearchLibrary from './pages/ResearchLibrary';
-import Training from './pages/Training';
-import Hipaa from './pages/Hipaa';
-import Gdpr from './pages/Gdpr';
-import Quality from './pages/Quality';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
+import EhrIntegration from './pages/homepage/EhrIntegration';
+import TreatmentGuidelines from './pages/homepage/TreatmentGuidelines';
 import LiveAssistant from './pages/shared/LiveAssistant';
 import LiveMessageAssistant from './components/shared/LiveMessageAssistant';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { UserProvider } from './context/UserContext';
+
 export function App() {
   return <ErrorBoundary>
     <UserProvider>
@@ -54,14 +47,6 @@ export function App() {
           <Route path="/longitudinal-tracking" element={<LongitudinalTracking />} />
           <Route path="/ehr-integration" element={<EhrIntegration />} />
           <Route path="/treatment-guidelines" element={<TreatmentGuidelines />} />
-          <Route path="/clinical-guidance" element={<ClinicalGuidance />} />
-          <Route path="/research-library" element={<ResearchLibrary />} />
-          <Route path="/training" element={<Training />} />
-          <Route path="/hipaa" element={<Hipaa />} />
-          <Route path="/gdpr" element={<Gdpr />} />
-          <Route path="/quality" element={<Quality />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
           <Route path="/live-assistant" element={<LiveAssistant />} />
         </Routes>
         <LiveMessageAssistant />

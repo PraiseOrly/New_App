@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Homepage/Navbar";
 import { LinkIcon, ChevronDownIcon, XIcon, DownloadIcon } from "lucide-react";
 
 interface LazyImageProps {
