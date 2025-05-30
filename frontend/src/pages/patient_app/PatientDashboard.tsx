@@ -1,31 +1,19 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-// Update the import path below to match the actual location and filename of DashboardLayout
-// For example, if the file is named 'dashboardLayout.tsx' or is in a different folder, update accordingly:
-import DashboardLayout from '../components/patient/dashboardLayout';
-// or, if the file is in 'components/shared':
-// import DashboardLayout from '../components/shared/DashboardLayout';
-import PatientHome from '../components/patient/PatientHome';
-import PersonalInfo from '../components/patient/health-management/PersonalInfo';
-import PatientHistory from '../components/patient/health-management/PatientHistory';
-import PhysicalExam from '../components/patient/health-management/PhysicalExam';
-import ECGAnalysis from '../components/patient/diagnostics/ECGAnalysis';
-import HolterMonitor from '../components/patient/diagnostics/HolterMonitor';
-import BloodTests from '../components/patient/diagnostics/BloodTests';
-import CardiacMRI from '../components/patient/diagnostics/CardiacMRI';
-import CTScan from '../components/patient/diagnostics/CTScan';
-import SymptomChecker from '../components/patient/diagnostics/SymptomChecker';
-import EmergencySOS from '../components/patient/healthcare/EmergencySOS';
-import TreatmentPlan from '../components/patient/healthcare/TreatmentPlan';
-import Telemedicine from '../components/patient/healthcare/Telemedicine';
-import ScheduleAppointment from '../components/patient/appointments/ScheduleAppointment';
-import Notifications from '../components/patient/appointments/Notifications';
-import ChatAssistant from '../components/patient/appointments/ChatAssistant';
-import WearableDevices from '../components/patient/smart/WearableDevices';
-import ChatRoom from '../components/shared/ChatRoom';
+import PatientDashboardLayout from '../../components/patient/PatientDashboardLayout';
+import { PatientHome, Profile } from '../../components/patient';
+import { PatientHistory, PersonalInfo, PhysicalExam } from '../../components/patient/health-management';
+import { BloodTests, CardiacMRI, CTScan, ECGAnalysis, HolterMonitor, SymptomChecker } from '../../components/patient/diagnostics';
+import { EmergencySOS, Telemedicine, TreatmentPlan } from '../../components/patient/healthcare';
+import ChatAssistant from '../../components/patient/Appointments';
+import ScheduleAppointment from '../../components/patient/Appointments';
+import Notifications from '../../components/patient/Appointments';
+import { WearableDevices } from '../../components/patient/smart';
+import ChatRoom from '../../components/shared/ChatRoom';
+
 const PatientDashboard = () => {
   const patientName = 'Jane Doe';
-  return <DashboardLayout role="patient" userName={patientName}>
+  return <PatientDashboardLayout userName={patientName}>
       <Routes>
         <Route path="/" element={<PatientHome />} />
         <Route path="/personal-info" element={<PersonalInfo />} />
@@ -43,8 +31,15 @@ const PatientDashboard = () => {
         <Route path="/schedule" element={<ScheduleAppointment />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/chat" element={<ChatAssistant />} />
+        <Route path="/symptoms" element={<SymptomChecker />} />
+        <Route path="/sos" element={<EmergencySOS />} />
+        <Route path="/treatment" element={<TreatmentPlan />} />
+        <Route path="/telemedicine" element={<Telemedicine />} />
+        <Route path="/schedule" element={<ScheduleAppointment />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/chat" element={<ChatAssistant />} />
         <Route path="/wearables" element={<WearableDevices />} />
       </Routes>
-    </DashboardLayout>;
+    </PatientDashboardLayout>;
 };
 export default PatientDashboard;

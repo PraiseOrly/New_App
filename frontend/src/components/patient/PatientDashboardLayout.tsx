@@ -4,12 +4,12 @@ import PatientSidebar from "./PatientSidebar";
 import DashboardHeader from "../shared/DashboardHeader";
 import DashboardFooter from "../shared/DashboardFooter";
 
-interface DashboardLayoutProps {
+interface PatientDashboardLayoutProps {
 	children: React.ReactNode;
 	userName: string;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, userName }) => {
+const 	PatientDashboardLayout: React.FC<PatientDashboardLayoutProps> = ({ children, userName }) => {
 	const location = useLocation();
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const sidebarRef = useRef<HTMLDivElement>(null);
@@ -108,4 +108,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, userName })
 	);
 };
 
-export default DashboardLayout;
+export default PatientDashboardLayout;

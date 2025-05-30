@@ -6,8 +6,8 @@ import DoctorDashboard from './pages/doctor_app/DoctorDashboard';
 import PatientDashboard from './pages/patient_app/PatientDashboard';
 import AboutPage from './pages/homepage/AboutPage';
 import ContactPage from './pages/homepage/ContactPage';
-import DoctorBenefits from './pages/doctor_app/DoctorBenefits';
-import PatientBenefits from './pages/patient_app/PatientBenefits';
+import DoctorBenefits from './pages/homepage/DoctorBenefits';
+import PatientBenefits from './pages/homepage/PatientBenefits';
 import ErrorPage from './pages/shared/ErrorPage';
 import NotFoundPage from './pages/shared/NotFoundPage';
 
