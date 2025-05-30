@@ -12,7 +12,7 @@ const Navbar = () => {
 					{/* Logo */}
 					<Link to="/" className="flex items-center space-x-3">
 						<img
-							src="/real_logo.png"
+							src="/logos/real_logo.png"
 							alt="CardiacTek Logo"
 							className="h-16 w-21"
 						/>

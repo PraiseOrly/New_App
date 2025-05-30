@@ -289,7 +289,7 @@ const Homepage: React.FC = () => {
 							<Slideshow
 								slides={[
 									{
-										src: "/advanced.jpg",
+										src: "/backgrounds/advanced.jpg",
 										alt: "Medical professionals analyzing data",
 										caption: "Advanced Cardiac Insights",
 										eager: true,
@@ -329,7 +329,7 @@ const Homepage: React.FC = () => {
 					<Slideshow
 						slides={[
 							{
-								src: "/advanced.jpg",
+								src: "/backgrounds/advanced.jpg",
 								alt: "Doctor reviewing cardiac data",
 								caption: "Enhancing Patient Care",
 								eager: true,
@@ -536,7 +536,7 @@ const Homepage: React.FC = () => {
 							<Slideshow
 								slides={[
 									{
-										src: "/advanced.jpg",
+										src: "/backgrounds/advanced.jpg",
 										alt: "Clinical workflow integration",
 										caption: "Seamless EHR Integration",
 										eager: true,
